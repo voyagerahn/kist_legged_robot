@@ -1,10 +1,11 @@
+#include "RobotRunner.h"
+
 #include <fstream>
 
-#include "Dynamics/A1.h"
-#include "RobotRunner.h"
+#include "Controllers/ContactEstimator.h"
 #include "Controllers/OrientationEstimator.h"
 #include "Controllers/PositionVelocityEstimator.h"
-#include "Controllers/ContactEstimator.h"
+#include "Dynamics/A1.h"
 
 using namespace std;
 using namespace UNITREE_LEGGED_SDK;
@@ -20,23 +21,22 @@ void RobotRunner::Initialize() {
 
   initializeStateEstimator();
 
-  
-  // TODO :   Initialize the DesiredStateCommand object 
+  // TODO :   Initialize the DesiredStateCommand object
   // -----------------------------example-----------------------
   // _desiredStateCommand = new DesiredStateCommand<float>(
   //     driverCommand, &rc_control, controlParameters, &_stateEstimate,
   //     controlParameters->controller_dt);
 
   // Controller initializations
-  _kist_ctrl->_model = &_model;
-  _kist_ctrl->_quadruped = &_quadruped;
-  _kist_ctrl->_legController = _legController;
-  _kist_ctrl->_stateEstimator = _stateEstimator;
-  _kist_ctrl->_stateEstimate = &_stateEstimate;
-  _kist_ctrl->_controlParameters = controlParameters;
+  _robot_ctrl->_model = &_model;
+  _robot_ctrl->_quadruped = &_quadruped;
+  _robot_ctrl->_legController = _legController;
+  _robot_ctrl->_stateEstimator = _stateEstimator;
+  _robot_ctrl->_stateEstimate = &_stateEstimate;
+  _robot_ctrl->_controlParameters = controlParameters;
   // _kist_ctrl->_desiredStateCommand = _desiredStateCommand;
 
-  _kist_ctrl->initializeController();
+  _robot_ctrl->initializeController();
 }
 
 void RobotRunner::initializeStateEstimator() {
@@ -54,12 +54,18 @@ void RobotRunner::UDPRecv() { udp.Recv(); }
 void RobotRunner::UDPSend() { udp.Send(); }
 
 void RobotRunner::Run() {
-  udp.GetRecv(state);
+  // _stateEstimator->run();
+
+  setupStep();
+  // udp.GetRecv(state);
   _time = (float)motiontime * dt;
-  cout << "state:" << state.imu.quaternion[2] << endl;
-  safe.PositionLimit(cmd);
-  safe.PowerProtect(cmd, state, 6);
-  udp.SetSend(cmd);
+
+  _robot_ctrl->runController();
+  finalizeStep();
+  // cout << "state:" << state.imu.quaternion[2] << endl;
+  // safe.PositionLimit(cmd);
+  // safe.PowerProtect(cmd, state, 6);
+  // udp.SetSend(cmd);
 }
 
 void RobotRunner::setupStep() { udp.GetRecv(state); }
@@ -71,15 +77,7 @@ void RobotRunner::finalizeStep() {
   safe.PowerProtect(cmd, state, 6);
   udp.SetSend(cmd);
   motiontime++;
-
 }
-// double RobotRunner::jointLinearInterpolation(double initPos, double targetPos,
-//                                       double rate) {
-//   double p;
-//   rate = std::min(std::max(rate, 0.0), 1.0);
-//   p = initPos * (1 - rate) + targetPos * rate;
-//   return p;
-// }
 
 RobotRunner::~RobotRunner() {
   delete _legController;

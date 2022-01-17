@@ -50,16 +50,17 @@ void FSM_State_JointPD<T>::run() {
   qdDes << 0, 0, 0;
 
   static double progress(0.);
-  progress += this->_data->controlParameters->controller_dt;
+  // progress += this->_data->controlParameters->controller_dt;
+  progress += 0.002;
   double movement_duration(3.0);
   double ratio = progress/movement_duration;
   if(ratio > 1.) ratio = 1.;
 
 
   this->jointPDControl(0, ratio*qDes + (1. - ratio)*_ini_jpos.head(3), qdDes);
-  // this->jointPDControl(1, ratio*qDes + (1. - ratio)*_ini_jpos.segment(3, 3), qdDes);
-  // this->jointPDControl(2, ratio*qDes + (1. - ratio)*_ini_jpos.segment(6, 3), qdDes);
-  // this->jointPDControl(3, ratio*qDes + (1. - ratio)*_ini_jpos.segment(9, 3), qdDes);
+  this->jointPDControl(1, ratio*qDes + (1. - ratio)*_ini_jpos.segment(3, 3), qdDes);
+  this->jointPDControl(2, ratio*qDes + (1. - ratio)*_ini_jpos.segment(6, 3), qdDes);
+  this->jointPDControl(3, ratio*qDes + (1. - ratio)*_ini_jpos.segment(9, 3), qdDes);
 }
 
 /**

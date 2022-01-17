@@ -22,7 +22,7 @@ class RobotRunner {
  public:
   RobotRunner(uint8_t level, KIST_Controller* kist_ctrl) : safe(LeggedType::A1), udp(level) {
     udp.InitCmdData(cmd);
-    _kist_ctrl = kist_ctrl;
+    _robot_ctrl = kist_ctrl;
     Initialize();
   }
 
@@ -52,7 +52,7 @@ class RobotRunner {
   float gyro[3] = {0};
   float accel[3] = {0};
 
-  KIST_Controller* _kist_ctrl;
+  KIST_Controller* _robot_ctrl;
   RobotControlParameters* controlParameters;
 
  private:

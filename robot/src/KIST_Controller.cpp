@@ -27,7 +27,6 @@ void KIST_Controller::initializeController() {
 void KIST_Controller::runController() {
   // Find the current gait schedule
   _gaitScheduler->step();
-
   // Find the desired state trajectory
   //   _desiredStateCommand->convertToStateCommands();
 

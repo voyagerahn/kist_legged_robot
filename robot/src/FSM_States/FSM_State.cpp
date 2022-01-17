@@ -34,8 +34,8 @@ template <typename T>
 void FSM_State<T>::jointPDControl(
     int leg, Vec3<T> qDes, Vec3<T> qdDes) {
 
-  kpMat << 80, 0, 0, 0, 80, 0, 0, 0, 80;
-  kdMat << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+  kpMat << 25, 0, 0, 0, 25, 0, 0, 0, 25;
+  kdMat << 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5;
 
   _data->_legController->commands[leg].kpJoint = kpMat;
   _data->_legController->commands[leg].kdJoint = kdMat;
@@ -44,32 +44,32 @@ void FSM_State<T>::jointPDControl(
   _data->_legController->commands[leg].qdDes = qdDes;
 }
 
-/**
- * Cartesian impedance control for a given leg.
- *
- * @param leg the leg number to control
- * @param pDes desired foot position
- * @param vDes desired foot velocity
- * @param kp_cartesian P gains
- * @param kd_cartesian D gains
- */
-template <typename T>
-void FSM_State<T>::cartesianImpedanceControl(int leg, Vec3<T> pDes,
-                                             Vec3<T> vDes,
-                                             Vec3<double> kp_cartesian,
-                                             Vec3<double> kd_cartesian) {
-  _data->_legController->commands[leg].pDes = pDes;
-  // Create the cartesian P gain matrix
-  kpMat << kp_cartesian[0], 0, 0, 0,
-      kp_cartesian[1], 0, 0, 0,
-      kp_cartesian[2];
-  _data->_legController->commands[leg].kpCartesian = kpMat;
+// /**
+//  * Cartesian impedance control for a given leg.
+//  *
+//  * @param leg the leg number to control
+//  * @param pDes desired foot position
+//  * @param vDes desired foot velocity
+//  * @param kp_cartesian P gains
+//  * @param kd_cartesian D gains
+//  */
+// template <typename T>
+// void FSM_State<T>::cartesianImpedanceControl(int leg, Vec3<T> pDes,
+//                                              Vec3<T> vDes,
+//                                              Vec3<double> kp_cartesian,
+//                                              Vec3<double> kd_cartesian) {
+//   _data->_legController->commands[leg].pDes = pDes;
+//   // Create the cartesian P gain matrix
+//   kpMat << kp_cartesian[0], 0, 0, 0,
+//       kp_cartesian[1], 0, 0, 0,
+//       kp_cartesian[2];
+//   _data->_legController->commands[leg].kpCartesian = kpMat;
 
-  _data->_legController->commands[leg].vDes = vDes;
-  // Create the cartesian D gain matrix
-  kdMat << kd_cartesian[0], 0, 0, 0, kd_cartesian[1], 0, 0, 0, kd_cartesian[2];
-  _data->_legController->commands[leg].kdCartesian = kdMat;
-}
+//   _data->_legController->commands[leg].vDes = vDes;
+//   // Create the cartesian D gain matrix
+//   kdMat << kd_cartesian[0], 0, 0, 0, kd_cartesian[1], 0, 0, 0, kd_cartesian[2];
+//   _data->_legController->commands[leg].kdCartesian = kdMat;
+// }
 
 /**
  *

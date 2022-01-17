@@ -61,60 +61,62 @@ template <typename T>
 void LegController<T>::updateData(const LowState* state) {
   for (int leg = 0; leg < 4; leg++) {
     // q:
-    datas[0].q(FL_0) = state->motorState[FL_0].q;
-    datas[0].q(FL_1) = state->motorState[FL_1].q;
-    datas[0].q(FL_2) = state->motorState[FL_2].q;
+    datas[0].q(0) = state->motorState[FL_0].q;
+    datas[0].q(1) = state->motorState[FL_1].q;
+    datas[0].q(2) = state->motorState[FL_2].q;
 
-    datas[1].q(FR_0) = state->motorState[FR_0].q;
-    datas[1].q(FR_1) = state->motorState[FR_1].q;
-    datas[1].q(FR_2) = state->motorState[FR_2].q;
+    datas[1].q(0) = state->motorState[FR_0].q;
+    datas[1].q(1) = state->motorState[FR_1].q;
+    datas[1].q(2) = state->motorState[FR_2].q;
 
-    datas[2].q(RL_0) = state->motorState[RL_0].q;
-    datas[2].q(RL_1) = state->motorState[RL_1].q;
-    datas[2].q(RL_2) = state->motorState[RL_2].q;
+    datas[2].q(0) = state->motorState[RL_0].q;
+    datas[2].q(1) = state->motorState[RL_1].q;
+    datas[2].q(2) = state->motorState[RL_2].q;
 
-    datas[3].q(RR_0) = state->motorState[RR_0].q;
-    datas[3].q(RR_1) = state->motorState[RR_1].q;
-    datas[3].q(RR_2) = state->motorState[RR_2].q;
+    datas[3].q(0) = state->motorState[RR_0].q;
+    datas[3].q(1) = state->motorState[RR_1].q;
+    datas[3].q(2) = state->motorState[RR_2].q;
     // qd
-    datas[0].q(FL_0) = state->motorState[FL_0].dq;
-    datas[0].q(FL_1) = state->motorState[FL_1].dq;
-    datas[0].q(FL_2) = state->motorState[FL_2].dq;
+    datas[0].q(0) = state->motorState[FL_0].dq;
+    datas[0].q(1) = state->motorState[FL_1].dq;
+    datas[0].q(2) = state->motorState[FL_2].dq;
 
-    datas[1].q(FR_0) = state->motorState[FR_0].dq;
-    datas[1].q(FR_1) = state->motorState[FR_1].dq;
-    datas[1].q(FR_2) = state->motorState[FR_2].dq;
+    datas[1].q(0) = state->motorState[FR_0].dq;
+    datas[1].q(1) = state->motorState[FR_1].dq;
+    datas[1].q(2) = state->motorState[FR_2].dq;
 
-    datas[2].q(RL_0) = state->motorState[RL_0].dq;
-    datas[2].q(RL_1) = state->motorState[RL_1].dq;
-    datas[2].q(RL_2) = state->motorState[RL_2].dq;
+    datas[2].q(0) = state->motorState[RL_0].dq;
+    datas[2].q(1) = state->motorState[RL_1].dq;
+    datas[2].q(2) = state->motorState[RL_2].dq;
 
-    datas[3].q(RR_0) = state->motorState[RR_0].dq;
-    datas[3].q(RR_1) = state->motorState[RR_1].dq;
-    datas[3].q(RR_2) = state->motorState[RR_2].dq;
-    //tau
-    datas[0].tauEstimate(FL_0) = state->motorState[FL_0].tauEst;
-    datas[0].tauEstimate(FL_1) = state->motorState[FL_1].tauEst;
-    datas[0].tauEstimate(FL_2) = state->motorState[FL_2].tauEst;
+    datas[3].q(0) = state->motorState[RR_0].dq;
+    datas[3].q(1) = state->motorState[RR_1].dq;
+    datas[3].q(2) = state->motorState[RR_2].dq;
 
-    datas[1].tauEstimate(FR_0) = state->motorState[FR_0].tauEst;
-    datas[1].tauEstimate(FR_1) = state->motorState[FR_1].tauEst;
-    datas[1].tauEstimate(FR_2) = state->motorState[FR_2].tauEst;
+    cout << datas[0].q(0);
+    // //tau
+    // datas[0].tauEstimate(FL_0) = state->motorState[FL_0].tauEst;
+    // datas[0].tauEstimate(FL_1) = state->motorState[FL_1].tauEst;
+    // datas[0].tauEstimate(FL_2) = state->motorState[FL_2].tauEst;
 
-    datas[2].tauEstimate(RL_0) = state->motorState[RL_0].tauEst;
-    datas[2].tauEstimate(RL_1) = state->motorState[RL_1].tauEst;
-    datas[2].tauEstimate(RL_2) = state->motorState[RL_2].tauEst;
+    // datas[1].tauEstimate(FR_0) = state->motorState[FR_0].tauEst;
+    // datas[1].tauEstimate(FR_1) = state->motorState[FR_1].tauEst;
+    // datas[1].tauEstimate(FR_2) = state->motorState[FR_2].tauEst;
 
-    datas[3].tauEstimate(RR_0) = state->motorState[RR_0].tauEst;
-    datas[3].tauEstimate(RR_1) = state->motorState[RR_1].tauEst;
-    datas[3].tauEstimate(RR_2) = state->motorState[RR_2].tauEst;
+    // datas[2].tauEstimate(RL_0) = state->motorState[RL_0].tauEst;
+    // datas[2].tauEstimate(RL_1) = state->motorState[RL_1].tauEst;
+    // datas[2].tauEstimate(RL_2) = state->motorState[RL_2].tauEst;
 
-    // J and p
-    computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q, &(datas[leg].J),
-                                     &(datas[leg].p), leg);
+    // datas[3].tauEstimate(RR_0) = state->motorState[RR_0].tauEst;
+    // datas[3].tauEstimate(RR_1) = state->motorState[RR_1].tauEst;
+    // datas[3].tauEstimate(RR_2) = state->motorState[RR_2].tauEst;
 
-    // v
-    datas[leg].v = datas[leg].J * datas[leg].qd;
+    // // J and p
+    // computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q, &(datas[leg].J),
+    //                                  &(datas[leg].p), leg);
+
+    // // v
+    // datas[leg].v = datas[leg].J * datas[leg].qd;
   }
 }
 
@@ -127,106 +129,86 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   // tauFF
   Vec12<T> legTorque;
   legTorque.setZero();
-  legTorque(FL_0) = commands[0].tauFeedForward(FL_0);
-  legTorque(FL_1) = commands[0].tauFeedForward(FL_1);
-  legTorque(FL_2) = commands[0].tauFeedForward(FL_2);
+  // legTorque(FL_0) = commands[0].tauFeedForward(FL_0);
+  // legTorque(FL_1) = commands[0].tauFeedForward(FL_1);
+  // legTorque(FL_2) = commands[0].tauFeedForward(FL_2);
 
-  legTorque(FR_0) = commands[1].tauFeedForward(FR_0);
-  legTorque(FR_1) = commands[1].tauFeedForward(FR_1);
-  legTorque(FR_2) = commands[1].tauFeedForward(FR_2);
+  // legTorque(FR_0) = commands[1].tauFeedForward(FR_0);
+  // legTorque(FR_1) = commands[1].tauFeedForward(FR_1);
+  // legTorque(FR_2) = commands[1].tauFeedForward(FR_2);
 
-  legTorque(RL_0) = commands[2].tauFeedForward(RL_0);
-  legTorque(RL_1) = commands[2].tauFeedForward(RL_1);
-  legTorque(RL_2) = commands[2].tauFeedForward(RL_2);
+  // legTorque(RL_0) = commands[2].tauFeedForward(RL_0);
+  // legTorque(RL_1) = commands[2].tauFeedForward(RL_1);
+  // legTorque(RL_2) = commands[2].tauFeedForward(RL_2);
 
-  legTorque(RR_0) = commands[3].tauFeedForward(RR_0);
-  legTorque(RR_1) = commands[3].tauFeedForward(RR_1);
-  legTorque(RR_2) = commands[3].tauFeedForward(RR_2);
+  // legTorque(RR_0) = commands[3].tauFeedForward(RR_0);
+  // legTorque(RR_1) = commands[3].tauFeedForward(RR_1);
+  // legTorque(RR_2) = commands[3].tauFeedForward(RR_2);
+
   // forceFF
-  Vec12<T> footForce;
-  footForce.setZero();
-  footForce(FL_0) = commands[0].forceFeedForward(FL_0);
-  footForce(FL_1) = commands[0].forceFeedForward(FL_1);
-  footForce(FL_2) = commands[0].forceFeedForward(FL_2);
-  footForce(FR_0) = commands[1].forceFeedForward(FR_0);
-  footForce(FR_1) = commands[1].forceFeedForward(FR_1);
-  footForce(FR_2) = commands[1].forceFeedForward(FR_2);
-  footForce(RL_0) = commands[2].forceFeedForward(RL_0);
-  footForce(RL_1) = commands[2].forceFeedForward(RL_1);
-  footForce(RL_2) = commands[2].forceFeedForward(RL_2);
-  footForce(RR_0) = commands[3].forceFeedForward(RR_0);
-  footForce(RR_1) = commands[3].forceFeedForward(RR_1);
-  footForce(RR_2) = commands[3].forceFeedForward(RR_2);
+  // Vec12<T> footForce;
+  // footForce.setZero();
+  // footForce(FL_0) = commands[0].forceFeedForward(FL_0);
+  // footForce(FL_1) = commands[0].forceFeedForward(FL_1);
+  // footForce(FL_2) = commands[0].forceFeedForward(FL_2);
+  // footForce(FR_0) = commands[1].forceFeedForward(FR_0);
+  // footForce(FR_1) = commands[1].forceFeedForward(FR_1);
+  // footForce(FR_2) = commands[1].forceFeedForward(FR_2);
+  // footForce(RL_0) = commands[2].forceFeedForward(RL_0);
+  // footForce(RL_1) = commands[2].forceFeedForward(RL_1);
+  // footForce(RL_2) = commands[2].forceFeedForward(RL_2);
+  // footForce(RR_0) = commands[3].forceFeedForward(RR_0);
+  // footForce(RR_1) = commands[3].forceFeedForward(RR_1);
+  // footForce(RR_2) = commands[3].forceFeedForward(RR_2);
 
   // // cartesian PD
-  // footForce(FL_0) +=
-  //     commands.kpCartesian(0) * (commands.pDes(FL_0) - datas[FL_0].p) +
-  //     commands.kdCartesian(0) * (commands.vDes(FL_0) - datas[FL_0].v);
-  // footForce(FL_1) +=
-  //     commands.kpCartesian(1) * (commands.pDes(FL_1) - datas[FL_1].p) +
-  //     commands.kdCartesian(1) * (commands.vDes(FL_1) - datas[FL_1].v);
-  // footForce(FL_2) +=
-  //     commands.kpCartesian(2) * (commands.pDes(FL_2) - datas[FL_2].p) +
-  //     commands.kdCartesian(2) * (commands.vDes(FL_2) - datas[FL_2].v);
-  // footForce(FR_0) +=
-  //     commands.kpCartesian(0) * (commands.pDes(FR_0) - datas[FR_0].p) +
-  //     commands.kdCartesian(0) * (commands.vDes(FR_0) - datas[FR_0].v);
-  // footForce(FR_1) +=
-  //     commands.kpCartesian(1) * (commands.pDes(FR_1) - datas[FR_1].p) +
-  //     commands.kdCartesian(1) * (commands.vDes(FR_1) - datas[FR_1].v);
-  // footForce(FR_2) +=
-  //     commands.kpCartesian(2) * (commands.pDes(FR_2) - datas[FR_2].p) +
-  //     commands.kdCartesian(2) * (commands.vDes(FR_2) - datas[FR_2].v);
-  // footForce(RL_0) +=
-  //     commands.kpCartesian(0) * (commands.pDes(RL_0) - datas[RL_0].p) +
-  //     commands.kdCartesian(0) * (commands.vDes(RL_0) - datas[RL_0].v);
-  // footForce(RL_1) +=
-  //     commands.kpCartesian(1) * (commands.pDes(RL_1) - datas[RL_1].p) +
-  //     commands.kdCartesian(1) * (commands.vDes(RL_1) - datas[RL_1].v);
-  // footForce(RL_2) +=
-  //     commands.kpCartesian(2) * (commands.pDes(RL_2) - datas[RL_2].p) +
-  //     commands.kdCartesian(2) * (commands.vDes(RL_2) - datas[RL_2].v);
-  // footForce(RR_0) +=
-  //     commands.kpCartesian(0) * (commands.pDes(RR_0) - datas[RR_0].p) +
-  //     commands.kdCartesian(0) * (commands.vDes(RR_0) - datas[RR_0].v);
-  // footForce(RR_1) +=
-  //     commands.kpCartesian(1) * (commands.pDes(RR_1) - datas[RR_1].p) +
-  //     commands.kdCartesian(1) * (commands.vDes(RR_1) - datas[RR_1].v);
-  // footForce(RR_2) +=
-  //     commands.kpCartesian(2) * (commands.pDes(RR_2) - datas[RR_2].p) +
-  //     commands.kdCartesian(2) * (commands.vDes(RR_2) - datas[RR_2].v);
+
   // Torque
-//   // legTorque(FL_0) += datas[FL_0].J.transpose() * footForce(FL_0);
-//   // legTorque(FL_1) += datas[FL_1].J.transpose() * footForce(FL_1);
-//   // legTorque(FL_2) += datas[FL_2].J.transpose() * footForce(FL_2);
-//   // legTorque(FR_0) += datas[FR_0].J.transpose() * footForce(FR_0);
-//   // legTorque(FR_1) += datas[FR_1].J.transpose() * footForce(FR_1);
-//   // legTorque(FR_2) += datas[FR_2].J.transpose() * footForce(FR_2);
-//   // legTorque(RL_0) += datas[RL_0].J.transpose() * footForce(RL_0);
-//   // legTorque(RL_1) += datas[RL_1].J.transpose() * footForce(RL_1);
-//   // legTorque(RL_2) += datas[RL_2].J.transpose() * footForce(RL_2);
-//   // legTorque(RR_0) += datas[RR_0].J.transpose() * footForce(RR_0);
-//   // legTorque(RR_1) += datas[RR_1].J.transpose() * footForce(RR_1);
-//   // legTorque(RR_2) += datas[RR_2].J.transpose() * footForce(RR_2);
+  // legTorque(FL_0) += datas[FL_0].J.transpose() * footForce(FL_0);
+  // legTorque(FL_1) += datas[FL_1].J.transpose() * footForce(FL_1);
+  // legTorque(FL_2) += datas[FL_2].J.transpose() * footForce(FL_2);
+  // legTorque(FR_0) += datas[FR_0].J.transpose() * footForce(FR_0);
+  // legTorque(FR_1) += datas[FR_1].J.transpose() * footForce(FR_1);
+  // legTorque(FR_2) += datas[FR_2].J.transpose() * footForce(FR_2);
+  // legTorque(RL_0) += datas[RL_0].J.transpose() * footForce(RL_0);
+  // legTorque(RL_1) += datas[RL_1].J.transpose() * footForce(RL_1);
+  // legTorque(RL_2) += datas[RL_2].J.transpose() * footForce(RL_2);
+  // legTorque(RR_0) += datas[RR_0].J.transpose() * footForce(RR_0);
+  // legTorque(RR_1) += datas[RR_1].J.transpose() * footForce(RR_1);
+  // legTorque(RR_2) += datas[RR_2].J.transpose() * footForce(RR_2);
 
+  legTorque(0) +=
+      commands[0].kpJoint(0) * (commands[0].qDes(0) - datas[FL_0].q(0)) +
+      commands[0].kdJoint(0) * (commands[0].qdDes(0) - datas[FL_0].q(0));
+
+  legTorque(1) +=
+      commands[0].kpJoint(0) * (commands[0].qDes(1) - datas[FL_0].q(1)) +
+      commands[0].kdJoint(0) * (commands[0].qdDes(1) - datas[FL_0].q(1));
+
+  legTorque(2) +=
+      commands[0].kpJoint(0) * (commands[0].qDes(2) - datas[FL_0].q(2)) +
+      commands[0].kdJoint(0) * (commands[0].qdDes(2) - datas[FL_0].q(2));
+
+  cout << "legTorque(0)" << legTorque(0) << endl;
+  cout << "legTorque(1)" << legTorque(1) << endl;
+  cout << "legTorque(2)" << legTorque(2) << endl;
   // set command:
-  cmd->motorCmd[FL_0].tau = legTorque(0);
-  cmd->motorCmd[FL_1].tau = legTorque(1);
-  cmd->motorCmd[FL_2].tau = legTorque(2);
+  cmd->motorCmd[0].tau = legTorque(0);
+  cmd->motorCmd[1].tau = legTorque(1);
+  cmd->motorCmd[2].tau = legTorque(2);
 
-  cmd->motorCmd[FR_0].tau = legTorque(3);
-  cmd->motorCmd[FR_1].tau = legTorque(4);
-  cmd->motorCmd[FR_2].tau = legTorque(5);
+  // cmd->motorCmd[FR_0].tau = legTorque(3);
+  // cmd->motorCmd[FR_1].tau = legTorque(4);
+  // cmd->motorCmd[FR_2].tau = legTorque(5);
 
-  cmd->motorCmd[RL_0].tau = legTorque(6);
-  cmd->motorCmd[RL_1].tau = legTorque(7);
-  cmd->motorCmd[RL_2].tau = legTorque(8);
+  // cmd->motorCmd[RL_0].tau = legTorque(6);
+  // cmd->motorCmd[RL_1].tau = legTorque(7);
+  // cmd->motorCmd[RL_2].tau = legTorque(8);
 
-  cmd->motorCmd[RR_0].tau = legTorque(9);
-  cmd->motorCmd[RR_1].tau = legTorque(10);
-  cmd->motorCmd[RR_2].tau = legTorque(11);
+  // cmd->motorCmd[RR_0].tau = legTorque(9);
+  // cmd->motorCmd[RR_1].tau = legTorque(10);
+  // cmd->motorCmd[RR_2].tau = legTorque(11);
 
-  // joint space pd
   // joint space PD
   // cmd->kd_abad[leg] = commands[leg].kdJoint(0, 0);
   // cmd->kd_hip[leg] = commands[leg].kdJoint(1, 1);
