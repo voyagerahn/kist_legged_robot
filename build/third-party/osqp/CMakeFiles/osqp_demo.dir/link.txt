@@ -1,0 +1,1 @@
+/usr/bin/cc  -O3  -rdynamic CMakeFiles/osqp_demo.dir/examples/osqp_demo.c.o  -o out/osqp_demo -Wl,-rpath,/home/kist/templorary_kist_project/build/third-party/osqp/out out/libosqp.so  -lm -lrt -ldl 

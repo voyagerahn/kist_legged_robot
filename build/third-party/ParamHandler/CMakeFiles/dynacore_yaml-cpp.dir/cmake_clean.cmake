@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/binary.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/convert.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/directives.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/emit.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/emitfromevents.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/emitter.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/emitterstate.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/emitterutils.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/exceptions.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/exp.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/memory.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/node.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/node_data.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/nodebuilder.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/nodeevents.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/null.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/ostream_wrapper.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/parse.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/parser.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/regex_yaml.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/scanner.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/scanscalar.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/scantag.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/scantoken.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/simplekey.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/singledocparser.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/stream.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/tag.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/contrib/graphbuilder.cpp.o"
+  "CMakeFiles/dynacore_yaml-cpp.dir/src/contrib/graphbuilderadapter.cpp.o"
+  "libdynacore_yaml-cpp.pdb"
+  "libdynacore_yaml-cpp.so.0.5.3"
+  "libdynacore_yaml-cpp.so"
+  "libdynacore_yaml-cpp.so.0.5"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/dynacore_yaml-cpp.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

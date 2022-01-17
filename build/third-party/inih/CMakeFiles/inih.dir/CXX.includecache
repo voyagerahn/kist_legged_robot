@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kist/templorary_kist_project/third-party/inih/INIReader.cpp
+algorithm
+-
+cctype
+-
+cstdlib
+-
+ini.h
+/home/kist/templorary_kist_project/third-party/inih/ini.h
+INIReader.h
+/home/kist/templorary_kist_project/third-party/inih/INIReader.h
+
+/home/kist/templorary_kist_project/third-party/inih/INIReader.h
+map
+-
+set
+-
+string
+-
+
+/home/kist/templorary_kist_project/third-party/inih/ini.h
+stdio.h
+-
+

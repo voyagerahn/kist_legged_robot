@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libinih.so -o libinih.so CMakeFiles/inih.dir/ini.c.o CMakeFiles/inih.dir/INIReader.cpp.o 
