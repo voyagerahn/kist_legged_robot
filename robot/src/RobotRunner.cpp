@@ -68,7 +68,10 @@ void RobotRunner::Run() {
   // udp.SetSend(cmd);
 }
 
-void RobotRunner::setupStep() { udp.GetRecv(state); }
+void RobotRunner::setupStep() {
+  udp.GetRecv(state);
+  _legController->updateData(&state);
+}
 
 void RobotRunner::finalizeStep() {
   _legController->updateCommand(&cmd);

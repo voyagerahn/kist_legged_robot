@@ -93,7 +93,9 @@ void LegController<T>::updateData(const LowState* state) {
     datas[3].q(1) = state->motorState[RR_1].dq;
     datas[3].q(2) = state->motorState[RR_2].dq;
 
-    cout << datas[0].q(0);
+    cout << datas[0].q(0) << endl;
+    cout << datas[0].q(1) << endl;
+    cout << datas[0].q(2) << endl;
     // //tau
     // datas[0].tauEstimate(FL_0) = state->motorState[FL_0].tauEst;
     // datas[0].tauEstimate(FL_1) = state->motorState[FL_1].tauEst;
@@ -189,9 +191,10 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
       commands[0].kpJoint(0) * (commands[0].qDes(2) - datas[FL_0].q(2)) +
       commands[0].kdJoint(0) * (commands[0].qdDes(2) - datas[FL_0].q(2));
 
-  cout << "legTorque(0)" << legTorque(0) << endl;
-  cout << "legTorque(1)" << legTorque(1) << endl;
-  cout << "legTorque(2)" << legTorque(2) << endl;
+  // cout << "legTorque(0)" << legTorque(0) << endl;
+  // cout << "legTorque(1)" << legTorque(1) << endl;
+  // cout << "legTorque(2)" << legTorque(2) << endl;
+
   // set command:
   cmd->motorCmd[0].tau = legTorque(0);
   cmd->motorCmd[1].tau = legTorque(1);
