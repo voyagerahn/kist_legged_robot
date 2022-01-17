@@ -16,9 +16,9 @@ void KIST_Controller::initializeController() {
   ////_contactEstimator->initialize();
 
   // Initializes the Control FSM with all the required data
-  // _controlFSM = new ControlFSM<float>(
-  //     _quadruped, _stateEstimator, _legController, _gaitScheduler,
-  //     _controlParameters, &userParameters);
+  _controlFSM = new ControlFSM<float>(
+      _quadruped, _stateEstimator, _legController, _gaitScheduler,
+      _controlParameters, &userParameters);
 }
 
 /**
@@ -32,5 +32,5 @@ void KIST_Controller::runController() {
   //   _desiredStateCommand->convertToStateCommands();
 
   // Run the Control FSM code
-  // _controlFSM->runFSM();
+  _controlFSM->runFSM();
 }

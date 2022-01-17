@@ -1,7 +1,7 @@
 #ifndef _KIST_CONTROLLER_
 #define _KIST_CONTROLLER_
 
-// #include "../../src/FSM_States/ControlFSM.h"
+#include "FSM_States/ControlFSM.h"
 #include "ControlParameters/RobotParameters.h"
 #include "Controllers/ContactEstimator.h"
 #include "Controllers/GaitScheduler.h"
@@ -35,7 +35,7 @@ class KIST_Controller {
   LegController<float>* _legController = nullptr;
   StateEstimatorContainer<float>* _stateEstimator = nullptr;
   StateEstimate<float>* _stateEstimate = nullptr;
-  // ControlFSM<float>* _controlFSM;
+  ControlFSM<float>* _controlFSM;
   // Gait Scheduler controls the nominal contact schedule for the feet
   KIST_UserParameters userParameters;
   GaitScheduler<float>* _gaitScheduler;
