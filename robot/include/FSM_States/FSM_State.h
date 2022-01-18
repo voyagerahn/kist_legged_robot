@@ -34,7 +34,7 @@ enum class FSM_StateName {
   PASSIVE,
   JOINT_PD,
   // IMPEDANCE_CONTROL,
-  // STAND_UP,
+  STAND_UP,
   // BALANCE_STAND,
   // LOCOMOTION,
   // RECOVERY_STAND,
@@ -72,6 +72,7 @@ class FSM_State {
 
   //
   void jointPDControl(int leg, Vec3<T> qDes, Vec3<T> qdDes);
+  // void jointLinearInterpolation(int leg, Vec3<T> qDes, Vec3<T> qdDes, double rate);
   void cartesianImpedanceControl(int leg, Vec3<T> pDes, Vec3<T> vDes,
                                  Vec3<double> kp_cartesian,
                                  Vec3<double> kd_cartesian);

@@ -31,9 +31,7 @@ FSM_State<T>::FSM_State(ControlFSMData<T>* _controlFSMData,
  * @param dqDes desired joint velocity
  */
 template <typename T>
-void FSM_State<T>::jointPDControl(
-    int leg, Vec3<T> qDes, Vec3<T> qdDes) {
-
+void FSM_State<T>::jointPDControl(int leg, Vec3<T> qDes, Vec3<T> qdDes) {
   kpMat << 25, 0, 0, 0, 25, 0, 0, 0, 25;
   kdMat << 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5;
 
@@ -43,6 +41,20 @@ void FSM_State<T>::jointPDControl(
   _data->_legController->commands[leg].qDes = qDes;
   _data->_legController->commands[leg].qdDes = qdDes;
 }
+
+
+// template <typename T>
+// void FSM_State<T>::jointLinearInterpolation(int leg, Vec3<T> qDes,
+//                                             Vec3<T> qdDes, double rate) {
+//   kpMat << 25, 0, 0, 0, 25, 0, 0, 0, 25;
+//   kdMat << 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5;
+
+//   _data->_legController->commands[leg].kpJoint = kpMat;
+//   _data->_legController->commands[leg].kdJoint = kdMat;
+
+//   _data->_legController->commands[leg].qDes = p;
+//   _data->_legController->commands[leg].qdDes = qdDes;
+// }
 
 // /**
 //  * Cartesian impedance control for a given leg.
@@ -67,8 +79,8 @@ void FSM_State<T>::jointPDControl(
 
 //   _data->_legController->commands[leg].vDes = vDes;
 //   // Create the cartesian D gain matrix
-//   kdMat << kd_cartesian[0], 0, 0, 0, kd_cartesian[1], 0, 0, 0, kd_cartesian[2];
-//   _data->_legController->commands[leg].kdCartesian = kdMat;
+//   kdMat << kd_cartesian[0], 0, 0, 0, kd_cartesian[1], 0, 0, 0,
+//   kd_cartesian[2]; _data->_legController->commands[leg].kdCartesian = kdMat;
 // }
 
 /**
@@ -140,8 +152,8 @@ void FSM_State<T>::runControls() {
   footFeedForwardForces = Mat34<T>::Zero();
   footstepLocations = Mat34<T>::Zero();
 
-  // // Choose the controller to run for picking step locations and balance forces
-  // if (CONTROLLER_OPTION == 0) {
+  // // Choose the controller to run for picking step locations and balance
+  // forces if (CONTROLLER_OPTION == 0) {
   //   // Test to make sure we can control the robot
   //   // Test to make sure we can control the robot these will be calculated by
   //   // the controllers
@@ -257,22 +269,23 @@ void FSM_State<T>::runControls() {
 //                   //(_data->_quadruped->getHipLocation(leg) + pFeetVec);
 
 //     pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
-//                   (_data->_quadruped->getHipLocation(leg) + _data->_legController->datas[leg].p);
-
+//                   (_data->_quadruped->getHipLocation(leg) +
+//                   _data->_legController->datas[leg].p);
 
 //     pFeet[leg * 3] = (double)pFeetVecCOM[0];
 //     pFeet[leg * 3 + 1] = (double)pFeetVecCOM[1];
 //     pFeet[leg * 3 + 2] = (double)pFeetVecCOM[2];
 //   }
-  
+
 //   balanceController.set_alpha_control(0.01);
 //   balanceController.set_friction(0.5);
 //   balanceController.set_mass(46.0);
-//   balanceController.set_wrench_weights(COM_weights_stance, Base_weights_stance);
-//   balanceController.set_PDgains(kpCOM, kdCOM, kpBase, kdBase);
-//   balanceController.set_desiredTrajectoryData(rpy, p_des, omegaDes, v_des);
-//   balanceController.SetContactData(contactStateScheduled, minForces, maxForces);
-//   balanceController.updateProblemData(se_xfb, pFeet, p_des, p_act, v_des, v_act,
+//   balanceController.set_wrench_weights(COM_weights_stance,
+//   Base_weights_stance); balanceController.set_PDgains(kpCOM, kdCOM, kpBase,
+//   kdBase); balanceController.set_desiredTrajectoryData(rpy, p_des, omegaDes,
+//   v_des); balanceController.SetContactData(contactStateScheduled, minForces,
+//   maxForces); balanceController.updateProblemData(se_xfb, pFeet, p_des,
+//   p_act, v_des, v_act,
 //                                       O_err, 0.0);
 
 //   double fOpt[12];

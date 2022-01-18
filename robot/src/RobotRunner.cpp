@@ -62,7 +62,6 @@ void RobotRunner::Run() {
 
   _robot_ctrl->runController();
   finalizeStep();
-  // cout << "state:" << state.imu.quaternion[2] << endl;
   // safe.PositionLimit(cmd);
   // safe.PowerProtect(cmd, state, 6);
   // udp.SetSend(cmd);
@@ -77,7 +76,7 @@ void RobotRunner::finalizeStep() {
   _legController->updateCommand(&cmd);
 
   safe.PositionLimit(cmd);
-  safe.PowerProtect(cmd, state, 6);
+  safe.PowerProtect(cmd, state, 7);
   udp.SetSend(cmd);
   motiontime++;
 }

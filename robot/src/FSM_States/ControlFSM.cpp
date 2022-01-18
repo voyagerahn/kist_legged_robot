@@ -41,12 +41,12 @@ ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
   // Initialize and add all of the FSM States to the state list
   statesList.invalid = nullptr;
   statesList.jointPD = new FSM_State_JointPD<T>(&data);
+  statesList.passive = new FSM_State_Passive<T>(&data);
+  // statesList.standUp = new FSM_State_StandUp<T>(&data);
   // statesList.balanceStand = new FSM_State_BalanceStand<T>(&data);
   // statesList.locomotion = new FSM_State_Locomotion<T>(&data);
   // statesList.impedanceControl = new FSM_State_ImpedanceControl<T>(&data);
-  statesList.passive = new FSM_State_Passive<T>(&data);
   // statesList.recoveryStand = new FSM_State_RecoveryStand<T>(&data);
-  // statesList.standUp = new FSM_State_StandUp<T>(&data);
 
   safetyChecker = new SafetyChecker<T>(&data);
 
@@ -61,7 +61,7 @@ ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
 template <typename T>
 void ControlFSM<T>::initialize() {
   // Initialize a new FSM State with the control data
-  currentState = statesList.passive;
+  currentState = statesList.jointPD;
 
   // Enter the new current state cleanly
   currentState->onEnter();
@@ -80,13 +80,6 @@ void ControlFSM<T>::initialize() {
  */
 template <typename T>
 void ControlFSM<T>::runFSM() {
-  // Publish state estimator data to other computer
-  //for(size_t i(0); i<3; ++i){
-    //_state_estimator.p[i] = data._stateEstimator->getResult().position[i];
-    //_state_estimator.quat[i] = data._stateEstimator->getResult().orientation[i];
-  //}
-    //_state_estimator.quat[3] = data._stateEstimator->getResult().orientation[3];
-  //state_estimator_lcm.publish("state_estimator_ctrl_pc", &_state_estimator);
 
   // Check the robot state for safe operation
   operatingMode = safetyPreCheck();
@@ -111,7 +104,7 @@ void ControlFSM<T>::runFSM() {
   //     //data.controlParameters->control_mode = K_FRONTJUMP;
   //   //std::cout<< "control mode: "<<data.controlParameters->control_mode<<std::endl;
   // }
-  data.controlParameters->control_mode = K_PASSIVE;
+  data.controlParameters->control_mode = K_JOINT_PD;
 
   // Run the robot control code if operating mode is not unsafe
   if (operatingMode != FSM_OperatingMode::ESTOP) {
@@ -239,8 +232,8 @@ FSM_State<T>* ControlFSM<T>::getNextState(FSM_StateName stateName) {
     case FSM_StateName::INVALID:
       return statesList.invalid;
 
-    // case FSM_StateName::PASSIVE:
-    //   return statesList.passive;
+    case FSM_StateName::PASSIVE:
+      return statesList.passive;
 
     case FSM_StateName::JOINT_PD:
       return statesList.jointPD;

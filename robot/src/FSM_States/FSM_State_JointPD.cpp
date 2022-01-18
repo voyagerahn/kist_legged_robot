@@ -44,23 +44,29 @@ void FSM_State_JointPD<T>::onEnter() {
 template <typename T>
 void FSM_State_JointPD<T>::run() {
   // This is just a test, should be running whatever other code you want
+  Vec3<T> qInit;
+  qInit << 0,0,0;
   Vec3<T> qDes;
   qDes << 0, 0.087, -1.48;
   Vec3<T> qdDes;
   qdDes << 0, 0, 0;
 
-  static double progress(0.);
   // progress += this->_data->controlParameters->controller_dt;
-  progress += 0.002;
-  double movement_duration(3.0);
-  double ratio = progress/movement_duration;
-  if(ratio > 1.) ratio = 1.;
+  // progress += 0.002;
+  static double rate_count(0.);
+  rate_count++;
 
+  double rate = rate_count / 500;
 
-  this->jointPDControl(0, ratio*qDes + (1. - ratio)*_ini_jpos.head(3), qdDes);
-  this->jointPDControl(1, ratio*qDes + (1. - ratio)*_ini_jpos.segment(3, 3), qdDes);
-  this->jointPDControl(2, ratio*qDes + (1. - ratio)*_ini_jpos.segment(6, 3), qdDes);
-  this->jointPDControl(3, ratio*qDes + (1. - ratio)*_ini_jpos.segment(9, 3), qdDes);
+  rate = std::min(std::max(rate, 0.0), 1.0);
+  // double movement_duration(3.0);
+  // double ratio = progress/movement_duration;
+  if(rate > 1.) rate = 1.;
+
+  this->jointPDControl(0, rate*qDes + (1. - rate)*_ini_jpos.head(3), qdDes);
+  this->jointPDControl(1, rate*qDes + (1. - rate)*_ini_jpos.segment(3, 3), qdDes);
+  this->jointPDControl(2, rate*qDes + (1. - rate)*_ini_jpos.segment(6, 3), qdDes);
+  this->jointPDControl(3, rate*qDes + (1. - rate)*_ini_jpos.segment(9, 3), qdDes);
 }
 
 /**

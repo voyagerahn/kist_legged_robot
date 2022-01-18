@@ -13,7 +13,7 @@ rights reserved.
 #include "Controllers/LegController.h"
 #include "Controllers/StateEstimatorContainer.h"
 #include "Dynamics/Quadruped.h"
-#include "./kist_legged_robot.h"
+#include "kist_legged_robot.h"
 #include "KIST_Controller.hpp"
 using namespace std;
 using namespace UNITREE_LEGGED_SDK;
