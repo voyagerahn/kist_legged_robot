@@ -8,6 +8,7 @@ include_directories("../third-party/osqp/include")       # osqp includes
 include_directories("../third-party/ParamHandler")
 include_directories("../robot/include")
 include_directories("/usr/include/eigen3")   # eigen includes
+# include_directories("/usr/local/include/eigen3")   # eigen includes for robot computer
 include_directories("FootstepPlanner")
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})

@@ -41,28 +41,53 @@ void FSM_State_JointPD<T>::onEnter() {
  */
 template <typename T>
 void FSM_State_JointPD<T>::run() {
-  // This is just a test, should be running whatever other code you want
-  Vec3<T> qInit;
-  qInit << 0,0,0;
+  // // This is just a test, should be running whatever other code you want
+  // Vec3<T> qInit;
+  // qInit << 0,0,0;
+  // Vec3<T> qDes;
+  // qDes << 0, 0.087, -1.48;
+  // Vec3<T> qdDes;
+  // qdDes << 0, 0, 0;
+  // // progress += this->_data->controlParameters->controller_dt;
+  // // progress += 0.002;
+  // static double rate_count(0.);
+  // rate_count++;
+
+  // double rate = rate_count / 500;
+  // double p = std::min(std::max(rate, 0.0), 1.0);
+  // // cout << this->_data->_legController->datas[0].q[1] << endl;
+  // // cout << _ini_jpos << endl;
+  // // double movement_duration(3.0);
+  // // double ratio = progress/movement_duration;
+  // this->jointPDControl(0, p*qDes + (1. - p)*_ini_jpos.head(3), qdDes);
+  // this->jointPDControl(1, p*qDes + (1. - p)*_ini_jpos.segment(3, 3), qdDes);
+  // this->jointPDControl(2, p*qDes + (1. - p)*_ini_jpos.segment(6, 3), qdDes);
+  // this->jointPDControl(3, p*qDes + (1. - p)*_ini_jpos.segment(9, 3), qdDes);
+    // This is just a test, should be running whatever other code you want
   Vec3<T> qDes;
   qDes << 0, 0.087, -1.48;
   Vec3<T> qdDes;
   qdDes << 0, 0, 0;
-  // progress += this->_data->controlParameters->controller_dt;
-  // progress += 0.002;
-  static double rate_count(0.);
-  rate_count++;
 
-  double rate = rate_count / 500;
-  double p = std::min(std::max(rate, 0.0), 1.0);
-  // cout << this->_data->_legController->datas[0].q[1] << endl;
-  // cout << _ini_jpos << endl;
-  // double movement_duration(3.0);
-  // double ratio = progress/movement_duration;
-  this->jointPDControl(0, p*qDes + (1. - p)*_ini_jpos.head(3), qdDes);
-  this->jointPDControl(1, p*qDes + (1. - p)*_ini_jpos.segment(3, 3), qdDes);
-  this->jointPDControl(2, p*qDes + (1. - p)*_ini_jpos.segment(6, 3), qdDes);
-  this->jointPDControl(3, p*qDes + (1. - p)*_ini_jpos.segment(9, 3), qdDes);
+  static double progress(0.);
+  progress += this->_data->controlParameters->controller_dt;
+  double movement_duration(3.0);
+  double ratio = progress / movement_duration;
+  if (ratio > 1.) ratio = 1.;
+
+  _ini_jpos[0] = this->_data->_legController->datas[0].q[0];
+  _ini_jpos[1] = this->_data->_legController->datas[0].q[1];
+  _ini_jpos[2] = this->_data->_legController->datas[0].q[2];
+  cout << " _ini_jpos[0]" << _ini_jpos[0] << endl;
+  cout << " _ini_jpos[1]" << _ini_jpos[1] << endl;
+  cout << " _ini_jpos[2]" << _ini_jpos[2] << endl;
+
+  this->jointPDControl(0, ratio * qDes + (1. - ratio) * _ini_jpos.head(3),
+                       qdDes);
+  // this->jointPDControl(1, ratio*qDes + (1. - ratio)*_ini_jpos.segment(3, 3),
+  // qdDes); this->jointPDControl(2, ratio*qDes + (1. -
+  // ratio)*_ini_jpos.segment(6, 3), qdDes); this->jointPDControl(3, ratio*qDes
+  // + (1. - ratio)*_ini_jpos.segment(9, 3), qdDes);
 }
 
 /**

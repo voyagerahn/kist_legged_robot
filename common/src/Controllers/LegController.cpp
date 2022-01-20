@@ -153,7 +153,7 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   // legTorque(RR_2) = commands[3].tauFeedForward(RR_2);
 
   // forceFF
-  // Vec12<T> footForce;
+  Vec12<T> footForce;
   // footForce.setZero();
   // footForce(FL_0) = commands[0].forceFeedForward(FL_0);
   // footForce(FL_1) = commands[0].forceFeedForward(FL_1);
@@ -184,6 +184,7 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   // legTorque(RR_1) += datas[RR_1].J.transpose() * footForce(RR_1);
   // legTorque(RR_2) += datas[RR_2].J.transpose() * footForce(RR_2);
 
+  // joint space pd
   legTorque(0) +=
       commands[0].kpJoint(0, 0) * (commands[0].qDes(0) - datas[0].q(0)) +
       commands[0].kdJoint(0, 0) * (commands[0].qdDes(0) - datas[0].qd(0));
@@ -231,6 +232,7 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   // legTorque(11) +=
   //     commands[3].kpJoint(2, 2) * (commands[3].qDes(2) - datas[3].q(2)) +
   //     commands[3].kdJoint(2, 2) * (commands[3].qdDes(2) - datas[3].qd(2));
+  
   // cout << "legTorque(0)" << legTorque(0) << endl;
   // cout << "legTorque(1)" << legTorque(1) << endl;
   // cout << "legTorque(2)" << legTorque(2) << endl;

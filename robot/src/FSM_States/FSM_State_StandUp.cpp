@@ -49,7 +49,6 @@ void FSM_State_StandUp<T>::run() {
 
     T hMax = 0.25;
     T progress = 2 * iter * this->_data->controlParameters->controller_dt;
-    cout << "iter" << iter << endl;
     if (progress > 1.){ progress = 1.; }
 
     for(int i = 0; i < 4; i++) {

@@ -1,7 +1,7 @@
 #ifndef CHEETAH_SOFTWARE_SPARSECMPC_H
 #define CHEETAH_SOFTWARE_SPARSECMPC_H
 
-#include "GraphSearch.h"
+#include "../../FootstepPlanner/GraphSearch.h"
 #include "cppTypes.h"
 #include "../../../third-party/JCQP/SparseMatrixMath.h"
 
