@@ -11,17 +11,10 @@ include_directories("../../common/FootstepPlanner")
 include_directories("/usr/local/include/lcm/")   # lcm includes
 # include_directories("/usr/include/eigen3")   # lcm includes
 
-# link_directories(lib)
-# file(GLOB sources "src/*.cpp")
 file(GLOB_RECURSE sources
 "./*.cpp"
 "FSM_States/*.cpp" 
 )
-
-# file(GLOB_RECURSE extra_sources
-# "FSM_States/*.cpp" 
-# )
-
 
 link_directories(lib)
 link_directories(./lib)

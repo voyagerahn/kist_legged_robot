@@ -61,8 +61,6 @@ void FSM_State_JointPD<T>::run() {
   rate = std::min(std::max(rate, 0.0), 1.0);
   // double movement_duration(3.0);
   // double ratio = progress/movement_duration;
-  if(rate > 1.) rate = 1.;
-
   this->jointPDControl(0, rate*qDes + (1. - rate)*_ini_jpos.head(3), qdDes);
   this->jointPDControl(1, rate*qDes + (1. - rate)*_ini_jpos.segment(3, 3), qdDes);
   this->jointPDControl(2, rate*qDes + (1. - rate)*_ini_jpos.segment(6, 3), qdDes);

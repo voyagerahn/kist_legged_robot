@@ -42,7 +42,7 @@ ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
   statesList.invalid = nullptr;
   statesList.jointPD = new FSM_State_JointPD<T>(&data);
   statesList.passive = new FSM_State_Passive<T>(&data);
-  // statesList.standUp = new FSM_State_StandUp<T>(&data);
+  statesList.standUp = new FSM_State_StandUp<T>(&data);
   // statesList.balanceStand = new FSM_State_BalanceStand<T>(&data);
   // statesList.locomotion = new FSM_State_Locomotion<T>(&data);
   // statesList.impedanceControl = new FSM_State_ImpedanceControl<T>(&data);
@@ -182,12 +182,12 @@ void ControlFSM<T>::runFSM() {
 template <typename T>
 FSM_OperatingMode ControlFSM<T>::safetyPreCheck() {
   // Check for safe orientation if the current state requires it
-  if (currentState->checkSafeOrientation && data.controlParameters->control_mode != K_RECOVERY_STAND) {
+  // if (currentState->checkSafeOrientation && data.controlParameters->control_mode != K_RECOVERY_STAND) {
     if (!safetyChecker->checkSafeOrientation()) {
       operatingMode = FSM_OperatingMode::ESTOP;
       std::cout << "broken: Orientation Safety Ceck FAIL" << std::endl;
-    }
-  }
+    // }
+   }
 
   // Default is to return the current operating mode
   return operatingMode;

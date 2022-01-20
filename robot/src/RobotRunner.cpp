@@ -19,6 +19,7 @@ void RobotRunner::Initialize() {
   _stateEstimator = new StateEstimatorContainer<float>(
       &imu, _legController->datas, &_stateEstimate, controlParameters);
 
+  cout << controlParameters->controller_dt << endl;
   initializeStateEstimator();
 
   // TODO :   Initialize the DesiredStateCommand object
@@ -56,12 +57,12 @@ void RobotRunner::UDPSend() { udp.Send(); }
 void RobotRunner::Run() {
   // _stateEstimator->run();
 
-  setupStep();
+  // setupStep();
   // udp.GetRecv(state);
   _time = (float)motiontime * dt;
 
-  _robot_ctrl->runController();
-  finalizeStep();
+  // _robot_ctrl->runController();
+  // finalizeStep();
   // safe.PositionLimit(cmd);
   // safe.PowerProtect(cmd, state, 6);
   // udp.SetSend(cmd);

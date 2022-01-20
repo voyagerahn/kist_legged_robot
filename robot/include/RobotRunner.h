@@ -23,7 +23,7 @@ class RobotRunner {
   RobotRunner(uint8_t level, KIST_Controller* kist_ctrl) : safe(LeggedType::A1), udp(level) {
     udp.InitCmdData(cmd);
     _robot_ctrl = kist_ctrl;
-    Initialize();
+    // Initialize();
   }
 
   virtual ~RobotRunner();

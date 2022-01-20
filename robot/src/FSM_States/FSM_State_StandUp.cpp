@@ -48,8 +48,8 @@ template <typename T>
 void FSM_State_StandUp<T>::run() {
 
     T hMax = 0.25;
-    T progress = 2 * iter * this->_data->controlParameters->controller_dt;
-    // T progress = 2 * iter * 0.002;
+    // T progress = 2 * iter * this->_data->controlParameters->controller_dt;
+    T progress = 2 * iter * 0.002;
 
     if (progress > 1.){ progress = 1.; }
 
@@ -96,10 +96,14 @@ FSM_StateName FSM_State_StandUp<T>::checkTransition() {
       this->nextStateName = FSM_StateName::PASSIVE;
       break;
 
+      // default:
+      //   std::cout << "[CONTROL FSM] Bad Request: Cannot transition from "
+      //             << K_PASSIVE << " to "
+      //             << this->_data->controlParameters->control_mode <<
+      //             std::endl;  -->> error
     default:
       std::cout << "[CONTROL FSM] Bad Request: Cannot transition from "
-                << K_PASSIVE << " to "
-                << this->_data->controlParameters->control_mode << std::endl;
+                << K_PASSIVE << " to " << std::endl;
   }
 
   // Get the next state
