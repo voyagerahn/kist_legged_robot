@@ -31,10 +31,9 @@ void FSM_State_JointPD<T>::onEnter() {
   iter = 0;
   for(size_t leg(0); leg<4; ++leg){
     for(size_t jidx(0); jidx <3; ++jidx){
-      _ini_jpos[3*leg + jidx] = FSM_State<T>::_data->_legController->datas[leg].q[jidx];
+      _ini_jpos[3*leg + jidx] = this->_data->_legController->datas[leg].q[jidx];
     }
   }
-  cout << _ini_jpos << endl;
 }
 
 /**
@@ -49,7 +48,6 @@ void FSM_State_JointPD<T>::run() {
   qDes << 0, 0.087, -1.48;
   Vec3<T> qdDes;
   qdDes << 0, 0, 0;
-
   // progress += this->_data->controlParameters->controller_dt;
   // progress += 0.002;
   static double rate_count(0.);
@@ -57,6 +55,7 @@ void FSM_State_JointPD<T>::run() {
 
   double rate = rate_count / 500;
   double p = std::min(std::max(rate, 0.0), 1.0);
+  // cout << this->_data->_legController->datas[0].q[1] << endl;
   // cout << _ini_jpos << endl;
   // double movement_duration(3.0);
   // double ratio = progress/movement_duration;

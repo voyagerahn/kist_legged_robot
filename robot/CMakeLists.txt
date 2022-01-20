@@ -9,7 +9,8 @@ include_directories("lib")
 include_directories("../../common/include/")
 include_directories("../../common/FootstepPlanner")
 include_directories("/usr/local/include/lcm/")   # lcm includes
-# include_directories("/usr/include/eigen3")   # lcm includes
+# include_directories("/usr/include/eigen3")   # eigen includes
+# include_directories("/usr/local/include/eigen3")   # eigen includes for robot computer
 
 file(GLOB_RECURSE sources
 "./*.cpp"

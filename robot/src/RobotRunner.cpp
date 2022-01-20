@@ -16,7 +16,7 @@ void RobotRunner::Initialize() {
 
   // Always initialize the leg controller and state entimator
   _legController = new LegController<float>(_quadruped);
-  
+
   _stateEstimator = new StateEstimatorContainer<float>(
       &imu, _legController->datas, &_stateEstimate, controlParameters);
 
@@ -57,15 +57,20 @@ void RobotRunner::UDPSend() { udp.Send(); }
 void RobotRunner::Run() {
   _stateEstimator->run();
 
-  setupStep();
-  // udp.GetRecv(state);
+  // setupStep();
+    udp.GetRecv(state);
+  _legController->updateData(&state);
   // _time = (float)motiontime * dt;
   _robot_ctrl->runController();
 
-  finalizeStep();
-  // safe.PositionLimit(cmd);
-  // safe.PowerProtect(cmd, state, 6);
-  // udp.SetSend(cmd);
+  _legController->updateCommand(&cmd);
+
+  safe.PositionLimit(cmd);
+  safe.PowerProtect(cmd, state, 7);
+  udp.SetSend(cmd);
+  motiontime++;
+  // finalizeStep();
+
 }
 
 void RobotRunner::setupStep() {

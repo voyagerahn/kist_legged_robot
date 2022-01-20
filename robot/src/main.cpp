@@ -40,20 +40,15 @@ int main(void) {
             << "Press Enter to continue..." << std::endl;
   std::cin.ignore();
 
-
-  RobotRunner* _robotRunner;
-  _robotRunner = new RobotRunner(LOWLEVEL, &ctrl);
-  
-  // RobotRunner _robotRunner(LOWLEVEL, &ctrl);
-  _robotRunner->controlParameters = &_robotParams;
-  _robotRunner->Initialize();
-  LoopFunc loop_torque_control("torque control", _robotRunner->dt,
-                               boost::bind(&RobotRunner::Run, _robotRunner));
-  LoopFunc loop_udpSend("udp_send", _robotRunner->dt, 3,
-                        boost::bind(&RobotRunner::UDPSend, _robotRunner));
-  LoopFunc loop_udpRecv("udp_recv", _robotRunner->dt, 3,
-                        boost::bind(&RobotRunner::UDPRecv, _robotRunner));
-
+  RobotRunner _robotRunner(LOWLEVEL, &ctrl);
+  _robotRunner.controlParameters = &_robotParams;
+  _robotRunner.Initialize();
+  LoopFunc loop_torque_control("torque control", _robotRunner.dt,
+                               boost::bind(&RobotRunner::Run, &_robotRunner));
+  LoopFunc loop_udpSend("udp_send", _robotRunner.dt, 3,
+                        boost::bind(&RobotRunner::UDPSend, &_robotRunner));
+  LoopFunc loop_udpRecv("udp_recv", _robotRunner.dt, 3,
+                        boost::bind(&RobotRunner::UDPRecv, &_robotRunner));
   loop_udpSend.start();
   loop_udpRecv.start();
   loop_torque_control.start();
@@ -62,6 +57,28 @@ int main(void) {
   // int LengthOfFile = sizeof(file) / sizeof(*file); //60
   if (cin.get() == '\n')
   {
+      // delete _robotRunner;
+      cout << "-------------PROGRAM FINISHED-------------" << endl;
+
+      return 0;
+  }
+
+  while (1) {
+  };
+  return 0;
+}
+
+  // RobotRunner* _robotRunner;
+  // _robotRunner = new RobotRunner(LOWLEVEL, &ctrl);
+  // RobotRunner _robotRunner(LOWLEVEL, &ctrl);
+  // _robotRunner->controlParameters = &_robotParams;
+  // _robotRunner->Initialize();
+  // LoopFunc loop_torque_control("torque control", _robotRunner->dt,
+  //                              boost::bind(&RobotRunner::Run, _robotRunner));
+  // LoopFunc loop_udpSend("udp_send", _robotRunner->dt, 3,
+  //                       boost::bind(&RobotRunner::UDPSend, _robotRunner));
+  // LoopFunc loop_udpRecv("udp_recv", _robotRunner->dt, 3,
+  //                       boost::bind(&RobotRunner::UDPRecv, _robotRunner));
       // for (int i = 0; i < LengthOfFile; i++)
       // {
       //     fileName[i] = "../data/" + fileName[i];
@@ -72,13 +89,3 @@ int main(void) {
       //     for (int j = 0; j < chlc.motiontime; j++)
       //         file[i] << j*chlc.dt << " " << _mem_fprint[i][j] <<endl;
       // }
-      delete _robotRunner;
-      cout << "-------------PROGRAM FINISHED-------------" << endl;
-
-      return 0;
-  }
-
-  while (1) {
-  };
-  return 0;
-}
