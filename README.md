@@ -25,6 +25,3 @@ make
 ## Dependencies:
 
 - Eigen - http://eigen.tuxfamily.org
-
-
-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
