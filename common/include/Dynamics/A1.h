@@ -98,8 +98,7 @@ Quadruped<T> buildA1() {
 
   // locations
   a1._abadRotorLocation = Vec3<T>(0.125, 0.049, 0);
-  a1._abadLocation =
-      Vec3<T>(a1._bodyLength, a1._bodyWidth, 0) * 0.5;
+  a1._abadLocation = Vec3<T>(a1._bodyLength, a1._bodyWidth, 0) * 0.5;
   a1._hipLocation = Vec3<T>(0, a1._abadLinkLength, 0);
   a1._hipRotorLocation = Vec3<T>(0, 0.04, 0);
   a1._kneeLocation = Vec3<T>(0, 0, -a1._hipLinkLength);

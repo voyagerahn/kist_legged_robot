@@ -56,6 +56,7 @@ template <typename T>
 class LegController {
  public:
   LegController(Quadruped<T>& quad) : _quadruped(quad) {
+    datas->setQuadruped(_quadruped);
   }
 
   void zeroCommand();
@@ -82,86 +83,3 @@ void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>* J,
                                    Vec3<T>* p, int leg);
 
 #endif  // PROJECT_LEGCONTROLLER_H
-
-
-
-
-
-// /*! @file LegController.h
-//  *  @brief Common Leg Control Interface and Leg Control Algorithms
-//  *
-//  *  Implements low-level leg control for Mini Cheetah and Cheetah 3 Robots
-//  *  Abstracts away the difference between the SPIne and the TI Boards (the low
-//  * level leg control boards) All quantities are in the "leg frame" which has the
-//  * same orientation as the body frame, but is shifted so that 0,0,0 is at the
-//  * ab/ad pivot (the "hip frame").
-//  */
-
-// #ifndef PROJECT_LEGCONTROLLER_H
-// #define PROJECT_LEGCONTROLLER_H
-
-// #include "cppTypes.h"
-// #include "kist_legged_robot/kist_legged_robot.h"
-// using namespace UNITREE_LEGGED_SDK;
-
-// /*!
-//  * Data sent from the control algorithm to the legs.
-//  */
-// struct LegControllerCommand {
-//   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-//   LegControllerCommand() { zero(); }
-
-//   void zero();
-
-//   Vector3d tauFeedForward, forceFeedForward, qDes, qdDes, pDes, vDes;  // 3x1
-//   Matrix3d kpCartesian, kdCartesian, kpJoint, kdJoint;
-// };
-
-// /*!
-//  * Data returned from the legs to the control code.
-//  */
-// struct LegControllerData {
-//   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-//   LegControllerData() { zero(); }
-//   // void setQuadruped(Quadruped<T>& quad) { quadruped = &quad; }
-
-//   void zero();
-
-//   Vector3d q, qd, p, v;
-//   Matrix3d J;  // 12x12
-//   Vector3d tauEstimate;
-//     // Quadruped<T>* quadruped;
-
-// };
-
-// /*!
-//  * Controller for 4 legs of a quadruped.  Works for both Mini Cheetah and
-//  * Cheetah 3
-//  */
-// class LegController {
-//  public:
-//   LegController() {}
-
-//   void zeroCommand();
-//   void updateData(const LowState* state);
-//   void updateCommand(LowCmd* cmd);
-//   void setEnabled(bool enabled) { _legsEnabled = enabled; };
-
-//   /*!
-//    * Set the maximum torque.  This only works on cheetah 3!
-//    */
-//   void setMaxTorque(float tau) { _maxTorque = tau; }
-
-//   LegControllerCommand commands[4];
-//   LegControllerData datas[4];
-//   // Quadruped<T>& _quadruped;
-//   bool _legsEnabled = false;
-//   float _maxTorque = 0;
-// };
-
-// // template <typename T>
-// // void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>*
-// // J,
-// //                                    Vec3<T>* p, int leg);
-
-// #endif  // PROJECT_LEGCONTROLLER_H

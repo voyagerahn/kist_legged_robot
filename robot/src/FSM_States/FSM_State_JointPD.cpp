@@ -29,13 +29,12 @@ void FSM_State_JointPD<T>::onEnter() {
 
   // Reset counter
   iter = 0;
-
   for(size_t leg(0); leg<4; ++leg){
     for(size_t jidx(0); jidx <3; ++jidx){
       _ini_jpos[3*leg + jidx] = FSM_State<T>::_data->_legController->datas[leg].q[jidx];
     }
   }
-  
+  cout << _ini_jpos << endl;
 }
 
 /**
@@ -57,14 +56,14 @@ void FSM_State_JointPD<T>::run() {
   rate_count++;
 
   double rate = rate_count / 500;
-
-  rate = std::min(std::max(rate, 0.0), 1.0);
+  double p = std::min(std::max(rate, 0.0), 1.0);
+  // cout << _ini_jpos << endl;
   // double movement_duration(3.0);
   // double ratio = progress/movement_duration;
-  this->jointPDControl(0, rate*qDes + (1. - rate)*_ini_jpos.head(3), qdDes);
-  this->jointPDControl(1, rate*qDes + (1. - rate)*_ini_jpos.segment(3, 3), qdDes);
-  this->jointPDControl(2, rate*qDes + (1. - rate)*_ini_jpos.segment(6, 3), qdDes);
-  this->jointPDControl(3, rate*qDes + (1. - rate)*_ini_jpos.segment(9, 3), qdDes);
+  this->jointPDControl(0, p*qDes + (1. - p)*_ini_jpos.head(3), qdDes);
+  this->jointPDControl(1, p*qDes + (1. - p)*_ini_jpos.segment(3, 3), qdDes);
+  this->jointPDControl(2, p*qDes + (1. - p)*_ini_jpos.segment(6, 3), qdDes);
+  this->jointPDControl(3, p*qDes + (1. - p)*_ini_jpos.segment(9, 3), qdDes);
 }
 
 /**

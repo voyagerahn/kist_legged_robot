@@ -92,8 +92,8 @@ void LinearKFPositionVelocityEstimator<T>::run() {
 
   Vec3<T> g(0, 0, T(-9.81));
   Mat3<T> Rbod = this->_stateEstimatorData.result->rBody.transpose();
-  // in old code, Rbod * se_acc + g
-  Vec3<T> a = this->_stateEstimatorData.result->aWorld + g; 
+  //   // in old code, Rbod * se_acc + g
+  Vec3<T> a = this->_stateEstimatorData.result->aWorld + g;
   // std::cout << "A WORLD\n" << a << "\n";
   Vec4<T> pzs = Vec4<T>::Zero();
   Vec4<T> trusts = Vec4<T>::Zero();
@@ -106,10 +106,10 @@ void LinearKFPositionVelocityEstimator<T>::run() {
     Quadruped<T>& quadruped =
         *(this->_stateEstimatorData.legControllerData->quadruped);
     Vec3<T> ph = quadruped.getHipLocation(i);  // hip positions relative to CoM
-    // hw_i->leg_controller->leg_datas[i].p; 
+    //hw_i->leg_controller->leg_datas[i].p;
     Vec3<T> p_rel = ph + this->_stateEstimatorData.legControllerData[i].p;
     // hw_i->leg_controller->leg_datas[i].v;
-    Vec3<T> dp_rel = this->_stateEstimatorData.legControllerData[i].v;  
+    Vec3<T> dp_rel = this->_stateEstimatorData.legControllerData[i].v;
     Vec3<T> p_f = Rbod * p_rel;
     Vec3<T> dp_f =
         Rbod *
@@ -122,7 +122,7 @@ void LinearKFPositionVelocityEstimator<T>::run() {
 
     T trust = T(1);
     T phase = fmin(this->_stateEstimatorData.result->contactEstimate(i), T(1));
-    //T trust_window = T(0.25);
+    // T trust_window = T(0.25);
     T trust_window = T(0.2);
 
     if (phase < trust_window) {
@@ -130,15 +130,17 @@ void LinearKFPositionVelocityEstimator<T>::run() {
     } else if (phase > (T(1) - trust_window)) {
       trust = (T(1) - phase) / trust_window;
     }
-    //T high_suspect_number(1000);
+    // T high_suspect_number(1000);
     T high_suspect_number(100);
 
     // printf("Trust %d: %.3f\n", i, trust);
     Q.block(qindex, qindex, 3, 3) =
-        (T(1) + (T(1) - trust) * high_suspect_number) * Q.block(qindex, qindex, 3, 3);
+        (T(1) + (T(1) - trust) * high_suspect_number) *
+        Q.block(qindex, qindex, 3, 3);
     R.block(rindex1, rindex1, 3, 3) = 1 * R.block(rindex1, rindex1, 3, 3);
     R.block(rindex2, rindex2, 3, 3) =
-        (T(1) + (T(1) - trust) * high_suspect_number) * R.block(rindex2, rindex2, 3, 3);
+        (T(1) + (T(1) - trust) * high_suspect_number) *
+        R.block(rindex2, rindex2, 3, 3);
     R(rindex3, rindex3) =
         (T(1) + (T(1) - trust) * high_suspect_number) * R(rindex3, rindex3);
 
@@ -184,9 +186,6 @@ void LinearKFPositionVelocityEstimator<T>::run() {
 
 template class LinearKFPositionVelocityEstimator<float>;
 template class LinearKFPositionVelocityEstimator<double>;
-
-
-
 
 // /*! @file PositionVelocityEstimator.cpp
 //  *  @brief All State Estimation Algorithms
@@ -237,8 +236,8 @@ template class LinearKFPositionVelocityEstimator<double>;
 //   _P.setIdentity();
 //   _P = 100 * _P;
 //   _Q0.setIdentity();
-//   _Q0.block(0, 0, 3, 3) = (dt / 20.f) * Eigen::Matrix<float, 3, 3>::Identity();
-//   _Q0.block(3, 3, 3, 3) =
+//   _Q0.block(0, 0, 3, 3) = (dt / 20.f) * Eigen::Matrix<float, 3,
+//   3>::Identity(); _Q0.block(3, 3, 3, 3) =
 //       (dt * 9.8f / 20.f) * Eigen::Matrix<float, 3, 3>::Identity();
 //   _Q0.block(6, 6, 12, 12) = dt * Eigen::Matrix<float, 12, 12>::Identity();
 //   _R0.setIdentity();
@@ -269,8 +268,8 @@ template class LinearKFPositionVelocityEstimator<double>;
 //   Q.block(6, 6, 12, 12) = _Q0.block(6, 6, 12, 12) * process_noise_pfoot;
 
 //   Eigen::Matrix<float, 28, 28> R = Eigen::Matrix<float, 28, 28>::Identity();
-//   R.block(0, 0, 12, 12) = _R0.block(0, 0, 12, 12) * sensor_noise_pimu_rel_foot;
-//   R.block(12, 12, 12, 12) =
+//   R.block(0, 0, 12, 12) = _R0.block(0, 0, 12, 12) *
+//   sensor_noise_pimu_rel_foot; R.block(12, 12, 12, 12) =
 //       _R0.block(12, 12, 12, 12) * sensor_noise_vimu_rel_foot;
 //   R.block(24, 24, 4, 4) = _R0.block(24, 24, 4, 4) * sensor_noise_zfoot;
 
@@ -294,7 +293,8 @@ template class LinearKFPositionVelocityEstimator<double>;
 //     int i1 = 3 * i;
 //     Quadruped<T>& quadruped =
 //         *(this->_stateEstimatorData.legControllerData->quadruped);
-//     Vector3f ph = quadruped.getHipLocation(i);  // hip positions relative to CoM
+//     Vector3f ph = quadruped.getHipLocation(i);  // hip positions relative to
+//     CoM
 //     // hw_i->leg_controller->leg_datas[i].p;
 //     Vector3f p_rel = ph + this->_stateEstimatorData.legControllerData[i].p;
 //     // hw_i->leg_controller->leg_datas[i].v;

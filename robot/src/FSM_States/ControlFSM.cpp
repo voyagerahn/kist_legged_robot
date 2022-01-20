@@ -182,11 +182,11 @@ void ControlFSM<T>::runFSM() {
 template <typename T>
 FSM_OperatingMode ControlFSM<T>::safetyPreCheck() {
   // Check for safe orientation if the current state requires it
-  // if (currentState->checkSafeOrientation && data.controlParameters->control_mode != K_RECOVERY_STAND) {
+  if (currentState->checkSafeOrientation && data.controlParameters->control_mode != K_RECOVERY_STAND) {
     if (!safetyChecker->checkSafeOrientation()) {
       operatingMode = FSM_OperatingMode::ESTOP;
       std::cout << "broken: Orientation Safety Ceck FAIL" << std::endl;
-    // }
+    }
    }
 
   // Default is to return the current operating mode

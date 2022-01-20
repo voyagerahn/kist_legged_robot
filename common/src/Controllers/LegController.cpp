@@ -236,9 +236,14 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   // cout << "legTorque(2)" << legTorque(2) << endl;
 
   // set command:
-  cmd->motorCmd[0].tau = legTorque(0);
-  cmd->motorCmd[1].tau = legTorque(1);
-  cmd->motorCmd[2].tau = legTorque(2);
+  // cmd->motorCmd[0].tau = legTorque(0);
+  // cmd->motorCmd[1].tau = legTorque(1);
+  // cmd->motorCmd[2].tau = legTorque(2);
+
+  cmd->motorCmd[0].tau = 0.0;
+  cmd->motorCmd[1].tau = 0.0;
+  cmd->motorCmd[2].tau = 0.0;
+
 
   // cmd->motorCmd[3].tau = legTorque(3);
   // cmd->motorCmd[4].tau = legTorque(4);
