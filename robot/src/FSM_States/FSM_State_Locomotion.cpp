@@ -278,18 +278,18 @@ void FSM_State_Locomotion<T>::LocomotionControlStep() {
 
 }
 
-// /**
-//  * Stance leg logic for impedance control. Prevent leg slipping and
-//  * bouncing, as well as tracking the foot velocity during high speeds.
-//  */
-// template <typename T>
-// void FSM_State_Locomotion<T>::StanceLegImpedanceControl(int leg) {
-//   // Impedance control for the stance leg
-//   this->cartesianImpedanceControl(
-//       leg, this->footstepLocations.col(leg), Vec3<T>::Zero(),
-//       this->_data->controlParameters->stand_kp_cartesian,
-//       this->_data->controlParameters->stand_kd_cartesian);
-// }
+/**
+ * Stance leg logic for impedance control. Prevent leg slipping and
+ * bouncing, as well as tracking the foot velocity during high speeds.
+ */
+template <typename T>
+void FSM_State_Locomotion<T>::StanceLegImpedanceControl(int leg) {
+  // Impedance control for the stance leg
+  this->cartesianImpedanceControl(
+      leg, this->footstepLocations.col(leg), Vec3<T>::Zero(),
+      this->_data->controlParameters->stand_kp_cartesian,
+      this->_data->controlParameters->stand_kd_cartesian);
+}
 
 // template class FSM_State_Locomotion<double>;
 template class FSM_State_Locomotion<float>;
