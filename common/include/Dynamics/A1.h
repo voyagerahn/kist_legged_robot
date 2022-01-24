@@ -25,14 +25,16 @@ Quadruped<T> buildA1() {
   a1._bodyLength = 0.1805 * 2;
   a1._bodyWidth = 0.047 * 2;
   a1._bodyHeight = 0.05 * 2;
-  a1._abadGearRatio = 6;
-  a1._hipGearRatio = 6;
-  a1._kneeGearRatio = 9.33;
   a1._abadLinkLength = 0.0838;
   a1._hipLinkLength = 0.20;
   a1._kneeLinkY_offset = 0.004;
   a1._kneeLinkLength = 0.20;
   a1._maxLegLength = 0.409;
+
+
+  a1._abadGearRatio = 6;
+  a1._hipGearRatio = 6;
+  a1._kneeGearRatio = 9.33;
 
 
   a1._motorTauMax = 3.f;

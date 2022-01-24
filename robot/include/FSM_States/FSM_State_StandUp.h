@@ -31,6 +31,8 @@ class FSM_State_StandUp : public FSM_State<T> {
  private:
   // Keep track of the control iterations
   int iter = 0;
+  int iteration = 0;
+
   std::vector< Vec3<T> > _ini_foot_pos;
 };
 

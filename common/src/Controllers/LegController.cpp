@@ -54,34 +54,31 @@ void LegController<T>::zeroCommand() {
 
 /*!
  * Update the "leg data" from a LowState
+ *
+ * Representation of a quadruped robot's physical properties.
+ * (q, qd, tau, J, v and p)
+ * When viewed from the top, the quadruped's legs are:
+ *
+ * FRONT
+ * 1 0   RIGHT
+ * 3 2
+ * BACK
+ *
+ * 0:Front Right 1: Front Left 2: Rear Right 3: Rear Left
  */
 template <typename T>
 void LegController<T>::updateData(const LowState* state) {
   for (int leg = 0; leg < 4; leg++) {
-    /*!
-     * Representation of a quadruped robot's physical properties.
-     * (q, qd, tau, J, v and p)
-     * When viewed from the top, the quadruped's legs are:
-     *
-     * FRONT
-     * 1 0   RIGHT
-     * 3 2
-     * BACK
-     *
-     * 0:Front Right 1: Front Left 2: Rear Right 3: Rear Left
-     */
-    for (int leg = 0; leg < 4; leg++) {
-      for (int joint = 0; joint < 3; joint++) {
-        datas[leg].q(joint) = state->motorState[3 * leg + joint].q;
-        datas[leg].qd(joint) = state->motorState[3 * leg + joint].dq;
-        datas[leg]                 .tauEstimate(joint) =
-            state->motorState[3 * leg + joint].tauEst;
-        // J and p
-        computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q,
-                                         &(datas[leg].J), &(datas[leg].p), leg);
-        datas[leg].v = datas[leg].J * datas[leg].qd;
-      }
+    for (int joint = 0; joint < 3; joint++) {
+      datas[leg].q(joint) = state->motorState[3 * leg + joint].q;
+      datas[leg].qd(joint) = state->motorState[3 * leg + joint].dq;
+      // datas[leg]                 .tauEstimate(joint) =
+      //     state->motorState[3 * leg + joint].tauEst;
     }
+    // J and p
+    computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q, &(datas[leg].J),
+                                     &(datas[leg].p), leg);
+    datas[leg].v = datas[leg].J * datas[leg].qd;
   }
 }
 
@@ -95,29 +92,31 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     Vec3<T> legTorque;
     // forceFF
     Vec3<T> footForce;
-
-    // // cartesian PD
-    // footForce =
-    //     commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p) +
-    //     commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
-    // // cout << "qDes : " << datas[0].q.transpose()<<endl;
+    cout<<leg << " : pDes " <<commands[leg].pDes.transpose()<< endl;
+    cout<<leg << " : p " <<datas[leg].p.transpose()<< endl;
+    // cout << "--------------------------------------" << endl;
+    // cartesian PD
+    commands[leg].vDes << 0.0,0.0,0.0;
+    footForce =
+        commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p) +
+        commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
+    // cout << "qDes : " << datas[0].q.transpose()<<endl;
 
     // // cout << "command : " << commands[0].qDes.transpose()<<endl;
-    // // cout << "data : " << datas[0].q.transpose()<<endl;
     // // cout << "--------------------------------------" << endl;
     // cout << "footForce : " << footForce.transpose()<<endl;
 
     // Torque
-    // legTorque += datas[leg].J.transpose() * footForce;
-    // cout << "legTorque : " << legTorque.transpose()<<endl;
-    // cout << "--------------------------------------" << endl;
+    legTorque += datas[leg].J.transpose() * footForce;
 
-    legTorque = commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
-                commands[leg].kdJoint * (commands[leg].qdDes - datas[leg].qd);
+    // legTorque = commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
+    //             commands[leg].kdJoint * (commands[leg].qdDes - datas[leg].qd);
    
     legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
     legTorque(1) = (legTorque(1) > torque_limit) ? torque_limit : legTorque(1);
     legTorque(2) = (legTorque(2) > torque_limit) ? torque_limit : legTorque(2);
+    cout << leg <<" legTorque : " << legTorque.transpose()<<endl;
+    cout << "--------------------------------------" << endl;
     // set command
     cmd->motorCmd[3 * leg].tau = legTorque(0);
     cmd->motorCmd[3 * leg + 1].tau = legTorque(1);
@@ -147,7 +146,7 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   // cmd->motorCmd[0].tau = 0.0;
   // cmd->motorCmd[1].tau = 0.0;
   // cmd->motorCmd[2].tau = 0.0;
-  
+
   // cmd->motorCmd[3].tau = 0.0;
   // cmd->motorCmd[4].tau = 0.0;
   // cmd->motorCmd[5].tau = 0.0;
