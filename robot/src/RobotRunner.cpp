@@ -6,7 +6,7 @@
 #include "Controllers/OrientationEstimator.h"
 #include "Controllers/PositionVelocityEstimator.h"
 #include "Dynamics/A1.h"
-
+#include <time.h>
 using namespace std;
 using namespace UNITREE_LEGGED_SDK;
 
@@ -55,10 +55,12 @@ void RobotRunner::UDPRecv() { udp.Recv(); }
 void RobotRunner::UDPSend() { udp.Send(); }
 
 void RobotRunner::Run() {
+  // cout << result << endl;
+  // start = clock();
   _stateEstimator->run();
 
   // setupStep();
-    udp.GetRecv(state);
+  udp.GetRecv(state);
   _legController->updateData(&state);
   // _time = (float)motiontime * dt;
   _robot_ctrl->runController();
@@ -69,8 +71,9 @@ void RobotRunner::Run() {
   safe.PowerProtect(cmd, state, 7);
   udp.SetSend(cmd);
   motiontime++;
+  // end = clock();
+  // result = (double)(end-start)/CLOCKS_PER_SEC;
   // finalizeStep();
-
 }
 
 void RobotRunner::setupStep() {

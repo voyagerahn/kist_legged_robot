@@ -46,12 +46,13 @@ void FSM_State_StandUp<T>::onEnter() {
  */
 template <typename T>
 void FSM_State_StandUp<T>::run() {
-  if (iter < 100) {
+  if (iter < 50) {
     for (int leg = 0; leg < 4; leg++) {
       _ini_foot_pos[leg] = this->_data->_legController->datas[leg].p;
+      this->_data->_legController->commands[leg].pDes = _ini_foot_pos[leg];
     }
   } else {
-    T hMax = 0.20; 
+    T hMax = 0.0; //0.23 
     T progress = 2 * iteration * this->_data->controlParameters->controller_dt;
     if (progress > 1.) {
       progress = 1.;
@@ -61,7 +62,7 @@ void FSM_State_StandUp<T>::run() {
       this->_data->_legController->commands[leg].kpCartesian =
           Vec3<T>(200, 200, 200).asDiagonal();
       this->_data->_legController->commands[leg].kdCartesian =
-          Vec3<T>(1.0, 1.0, 1.0).asDiagonal();
+          Vec3<T>(1.3, 1.3, 1.3).asDiagonal();
 
       this->_data->_legController->commands[leg].pDes = _ini_foot_pos[leg];
       this->_data->_legController->commands[leg].pDes[2] =

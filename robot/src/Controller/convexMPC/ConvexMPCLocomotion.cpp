@@ -344,7 +344,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
       pFoot_des[foot] = pDesFootWorld;
       vFoot_des[foot] = vDesFootWorld;
       aFoot_des[foot] = footSwingTrajectories[foot].getAcceleration();
-      
+      // cout << foot << " : " << vDesFootWorld << endl;
       if(!data.userParameters->use_wbc){
         // Update leg control command regardless of the usage of WBIC
         data._legController->commands[foot].pDes = pDesLeg;

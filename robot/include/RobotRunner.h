@@ -54,7 +54,8 @@ class RobotRunner {
 
   KIST_Controller* _robot_ctrl;
   RobotControlParameters* controlParameters;
-
+  clock_t start, end;
+  double result;
  private:
   Quadruped<float> _quadruped;
   LegController<float>* _legController = nullptr;

@@ -21,7 +21,7 @@ Quadruped<T> buildA1() {
   Quadruped<T> a1;
   a1._robotType = RobotType::A1;
 
-  a1._bodyMass = 10.0; //before 6
+  a1._bodyMass = 108/9.8; //before 6
   a1._bodyLength = 0.1805 * 2;
   a1._bodyWidth = 0.047 * 2;
   a1._bodyHeight = 0.05 * 2;

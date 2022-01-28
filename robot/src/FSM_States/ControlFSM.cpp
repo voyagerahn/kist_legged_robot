@@ -62,7 +62,7 @@ template <typename T>
 void ControlFSM<T>::initialize() {
   // Initialize a new FSM State with the control data
   // currentState = statesList.standUp;
-  currentState = statesList.standUp;
+  currentState = statesList.locomotion;
   // Enter the new current state cleanly
   currentState->onEnter();
 
@@ -104,7 +104,7 @@ void ControlFSM<T>::runFSM() {
   //     //data.controlParameters->control_mode = K_FRONTJUMP;
   //   //std::cout<< "control mode: "<<data.controlParameters->control_mode<<std::endl;
   // }
-  data.controlParameters->control_mode = K_STAND_UP;
+  data.controlParameters->control_mode = K_LOCOMOTION;
 
   // Run the robot control code if operating mode is not unsafe
   if (operatingMode != FSM_OperatingMode::ESTOP) {
@@ -125,6 +125,12 @@ void ControlFSM<T>::runFSM() {
         //printInfo(1);
 
       } else {
+        if(iter < 1)
+        {
+        currentState->onEnter();
+        }
+
+
         // Run the iteration for the current state normally
         currentState->run();
       }
@@ -248,8 +254,8 @@ FSM_State<T>* ControlFSM<T>::getNextState(FSM_StateName stateName) {
     // case FSM_StateName::BALANCE_STAND:
     //   return statesList.balanceStand;
 
-    // case FSM_StateName::LOCOMOTION:
-    //   return statesList.locomotion;
+    case FSM_StateName::LOCOMOTION:
+      return statesList.locomotion;
 
     // case FSM_StateName::RECOVERY_STAND:
     //   return statesList.recoveryStand;

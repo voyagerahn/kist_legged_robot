@@ -92,19 +92,19 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     Vec3<T> legTorque;
     // forceFF
     Vec3<T> footForce;
-    cout<<leg << " : pDes " <<commands[leg].pDes.transpose()<< endl;
-    cout<<leg << " : p " <<datas[leg].p.transpose()<< endl;
+    // cout<< leg <<" pDes : " <<commands[leg].pDes.transpose()<< endl;
+    // cout<< leg <<" p : " <<datas[leg].p.transpose()<< endl;
+    // cout<< leg <<" error : " << (commands[leg].pDes-datas[leg].p).transpose()<< endl;
     // cout << "--------------------------------------" << endl;
     // cartesian PD
-    commands[leg].vDes << 0.0,0.0,0.0;
+    // commands[leg].vDes << 0.0,0.0,0.0;
     footForce =
         commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p) +
         commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
     // cout << "qDes : " << datas[0].q.transpose()<<endl;
 
-    // // cout << "command : " << commands[0].qDes.transpose()<<endl;
+    // cout<<leg << " footForce : " << footForce.transpose()<<endl;
     // // cout << "--------------------------------------" << endl;
-    // cout << "footForce : " << footForce.transpose()<<endl;
 
     // Torque
     legTorque += datas[leg].J.transpose() * footForce;
@@ -112,52 +112,37 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // legTorque = commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
     //             commands[leg].kdJoint * (commands[leg].qdDes - datas[leg].qd);
    
-    legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
-    legTorque(1) = (legTorque(1) > torque_limit) ? torque_limit : legTorque(1);
-    legTorque(2) = (legTorque(2) > torque_limit) ? torque_limit : legTorque(2);
+    // legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
+    // legTorque(1) = (legTorque(1) > torque_limit) ? torque_limit : legTorque(1);
+    // legTorque(2) = (legTorque(2) > torque_limit) ? torque_limit : legTorque(2);
+    // legTorque(0) = (legTorque(0) < -torque_limit) ? -torque_limit : legTorque(0);
+    // legTorque(1) = (legTorque(1) < -torque_limit) ? -torque_limit : legTorque(1);
+    // legTorque(2) = (legTorque(2) < -torque_limit) ? -torque_limit : legTorque(2);
+    if(leg == 1){
     cout << leg <<" legTorque : " << legTorque.transpose()<<endl;
     cout << "--------------------------------------" << endl;
+    }
     // set command
     cmd->motorCmd[3 * leg].tau = legTorque(0);
     cmd->motorCmd[3 * leg + 1].tau = legTorque(1);
     cmd->motorCmd[3 * leg + 2].tau = legTorque(2);
   }
 
-  // cout<<"FR(0)" << cmd->motorCmd[0].tau << endl;
-  // cout<<"FR(1)" << cmd->motorCmd[1].tau << endl;
-  // cout<<"FR(2)" << cmd->motorCmd[2].tau << endl;
-  // cout << "---------------------------------------" <<endl;
-
-  // cout<<"FL(0)" << cmd->motorCmd[3].tau << endl;
-  // cout<<"FL(1)" << cmd->motorCmd[4].tau << endl;
-  // cout<<"FL(2)" << cmd->motorCmd[5].tau << endl;
-  // cout << "---------------------------------------" <<endl;
-
-  // cout<<"RR(0)" << cmd->motorCmd[6].tau << endl;
-  // cout<<"RR(1)" << cmd->motorCmd[7].tau << endl;
-  // cout<<"RR(2)" << cmd->motorCmd[8].tau << endl;
-  // cout << "---------------------------------------" <<endl;
-
-  // cout<<"RL(0)" << cmd->motorCmd[9].tau << endl;
-  // cout<<"RL(1)" << cmd->motorCmd[10].tau << endl;
-  // cout<<"RL(2)" << cmd->motorCmd[11].tau << endl;
-  // cout << "---------------------------------------" <<endl;
-
   // cmd->motorCmd[0].tau = 0.0;
   // cmd->motorCmd[1].tau = 0.0;
   // cmd->motorCmd[2].tau = 0.0;
 
-  // cmd->motorCmd[3].tau = 0.0;
-  // cmd->motorCmd[4].tau = 0.0;
-  // cmd->motorCmd[5].tau = 0.0;
+  cmd->motorCmd[3].tau = 0.0;
+  cmd->motorCmd[4].tau = 0.0;
+  cmd->motorCmd[5].tau = 0.0;
 
-  // cmd->motorCmd[6].tau = 0.0;
-  // cmd->motorCmd[7].tau = 0.0;
-  // cmd->motorCmd[8].tau = 0.0;
+  cmd->motorCmd[6].tau = 0.0;
+  cmd->motorCmd[7].tau = 0.0;
+  cmd->motorCmd[8].tau = 0.0;
 
-  // cmd->motorCmd[9].tau = 0.0;
-  // cmd->motorCmd[10].tau =0.0;
-  // cmd->motorCmd[11].tau =0.0;
+  cmd->motorCmd[9].tau = 0.0;
+  cmd->motorCmd[10].tau =0.0;
+  cmd->motorCmd[11].tau =0.0;
 
 
   // // estimate torque

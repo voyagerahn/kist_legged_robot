@@ -264,7 +264,7 @@ void FSM_State_Locomotion<T>::LocomotionControlStep() {
       _wbc_data->pFoot_des[i] = cMPCOld->pFoot_des[i];
       _wbc_data->vFoot_des[i] = cMPCOld->vFoot_des[i];
       _wbc_data->aFoot_des[i] = cMPCOld->aFoot_des[i];
-      _wbc_data->Fr_des[i] = cMPCOld->Fr_des[i]; 
+      _wbc_data->Fr_des[i] = cMPCOld->Fr_des[i];
     }
     _wbc_data->contact_state = cMPCOld->contact_state;
     _wbc_ctrl->run(_wbc_data, *this->_data);
@@ -275,7 +275,6 @@ void FSM_State_Locomotion<T>::LocomotionControlStep() {
     //this->_data->_legController->commands[leg].kpCartesian = Kp_backup[leg];
     this->_data->_legController->commands[leg].kdCartesian = Kd_backup[leg];
   }
-
 }
 
 /**
