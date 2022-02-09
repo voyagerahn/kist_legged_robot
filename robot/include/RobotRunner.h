@@ -62,8 +62,4 @@ class RobotRunner {
   StateEstimate<float> _stateEstimate;
   StateEstimatorContainer<float>* _stateEstimator;
   FloatingBaseModel<float> _model;
-
-  // void ContactForceOptimization(double mass, Matrix3d inertiaRot, VectorCXd
-  // x_dist, VectorCXd acc_des, VectorCXd Fc_prev, VectorCXd &OptFc); //m, I_G
-  // (3x3), [p_1-p_c .. p_4 - p_c]T (12x1), [p_ddot_c w_dot_b]T, F^star
 };

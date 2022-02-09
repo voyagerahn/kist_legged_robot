@@ -13,10 +13,10 @@
 
 #include "cppTypes.h"
 #include "Dynamics/Quadruped.h"
+#include "Dynamics/CustomModel.h"
 #include "../../robot/include/kist_legged_robot.h"
 #include <rbdl/addons/urdfreader/urdfreader.h>
 #include <rbdl/rbdl.h>
-
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -60,6 +60,8 @@ class LegController {
  public:
   LegController(Quadruped<T>& quad) : _quadruped(quad) {
     datas->setQuadruped(_quadruped);
+    _q.setZero(19);
+    _dq.setZero(18);
   }
 
   void zeroCommand();
@@ -80,10 +82,18 @@ class LegController {
   T _maxTorque = 0;
   bool _zeroEncoders = false;
   u32 _calibrateEncoders = 0;
+
+  VectorXd _q, _dq;
+  CModel m;
 };
+
+
 
 template <typename T>
 void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>* J,
                                    Vec3<T>* p, int leg);
+// template <typename T>
+// void computeLegJacobian(RigidBodyDynamics::Model& _model, DVec<T>& _q,
+//                         Quat<T>& orientation, DMat<T>* J);
 
 #endif  // PROJECT_LEGCONTROLLER_H

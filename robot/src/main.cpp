@@ -1,6 +1,4 @@
 // #include "Controllers/GaitScheduler.h"
-#include <rbdl/addons/urdfreader/urdfreader.h>
-#include <rbdl/rbdl.h>
 
 #include "KIST_Controller.hpp"
 #include "KIST_UserParameters.h"
@@ -14,16 +12,13 @@ int main(void) {
   KIST_UserParameters userParameters;
   RobotControlParameters _robotParams;
   ControlParameters* _userControlParameters = nullptr;
-  RigidBodyDynamics::Model _model;
-  bool _bool_model_update;
   _userControlParameters = ctrl.getUserControlParameters();
 
-  // Load parameters from file 
+  // Load parameters from file
   printf("Loading parameters from file...\n");
   try {
     _robotParams.initializeFromYamlFile(
-        "/home/kist/kist_legged_project/config/"
-        "kist-legged-robot-defaults.yaml");
+        "/home/kist/kist_legged_project/config/kist-legged-robot-defaults.yaml");
   } catch (std::exception& e) {
     printf("Failed to initialize robot parameters from yaml file: %s\n",
            e.what());
@@ -39,22 +34,6 @@ int main(void) {
     exit(1);
   }
   printf("Loaded user parameters\n");
-
-  // Load URDF model file
-  RigidBodyDynamics::Addons::URDFReadFromFile("../../config/a1.urdf", &_model,
-                                              true, true);
-  cout << endl
-       << endl
-       << "Model Loaded for RBDL." << endl
-       << "Total DoFs: " << _model.dof_count << endl
-       << endl;
-
-  if (_model.dof_count != 18) {
-    cout << "Simulation model and RBDL model mismatch!!!" << endl << endl;
-  }
-  _bool_model_update = true;  // check model update
-
-  cout << "Model Loading Complete." << endl << endl;
 
   std::cout << "Communication level is set to LOW-level." << std::endl
             << "WARNING: Make sure the robot is hung up." << std::endl
