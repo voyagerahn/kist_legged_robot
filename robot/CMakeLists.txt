@@ -22,7 +22,7 @@ file(GLOB_RECURSE sources
 link_directories(lib)
 link_directories(./lib)
 add_library(robot SHARED ${sources})
-target_link_libraries(robot biomimetics pthread lcm inih dynacore_param_handler libunitree_legged_sdk_amd64.so)
+target_link_libraries(robot biomimetics pthread lcm inih dynacore_param_handler libunitree_legged_sdk_amd64.so rbdl rbdl_urdfreader)
 
 set(CMAKE_CXX_FLAGS "-O3")
 

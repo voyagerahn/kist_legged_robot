@@ -1,24 +1,29 @@
 // #include "Controllers/GaitScheduler.h"
+#include <rbdl/addons/urdfreader/urdfreader.h>
+#include <rbdl/rbdl.h>
+
 #include "KIST_Controller.hpp"
 #include "KIST_UserParameters.h"
 #include "RobotRunner.h"
 #include "loop.h"
+
 using namespace UNITREE_LEGGED_SDK;
 
 int main(void) {
-  
   KIST_Controller ctrl;
   KIST_UserParameters userParameters;
   RobotControlParameters _robotParams;
   ControlParameters* _userControlParameters = nullptr;
-    
+  RigidBodyDynamics::Model _model;
+  bool _bool_model_update;
   _userControlParameters = ctrl.getUserControlParameters();
 
-  
+  // Load parameters from file 
   printf("Loading parameters from file...\n");
   try {
     _robotParams.initializeFromYamlFile(
-        "/home/kist/kist_legged_project/config/kist-legged-robot-defaults.yaml");
+        "/home/kist/kist_legged_project/config/"
+        "kist-legged-robot-defaults.yaml");
   } catch (std::exception& e) {
     printf("Failed to initialize robot parameters from yaml file: %s\n",
            e.what());
@@ -33,7 +38,23 @@ int main(void) {
            e.what());
     exit(1);
   }
-  printf("Loaded user parameters\n");  
+  printf("Loaded user parameters\n");
+
+  // Load URDF model file
+  RigidBodyDynamics::Addons::URDFReadFromFile("../../config/a1.urdf", &_model,
+                                              true, true);
+  cout << endl
+       << endl
+       << "Model Loaded for RBDL." << endl
+       << "Total DoFs: " << _model.dof_count << endl
+       << endl;
+
+  if (_model.dof_count != 18) {
+    cout << "Simulation model and RBDL model mismatch!!!" << endl << endl;
+  }
+  _bool_model_update = true;  // check model update
+
+  cout << "Model Loading Complete." << endl << endl;
 
   std::cout << "Communication level is set to LOW-level." << std::endl
             << "WARNING: Make sure the robot is hung up." << std::endl
@@ -55,12 +76,11 @@ int main(void) {
 
   // ofstream file[data];
   // int LengthOfFile = sizeof(file) / sizeof(*file); //60
-  if (cin.get() == '\n')
-  {
-      // delete _robotRunner;
-      cout << "-------------PROGRAM FINISHED-------------" << endl;
+  if (cin.get() == '\n') {
+    // delete _robotRunner;
+    cout << "-------------PROGRAM FINISHED-------------" << endl;
 
-      return 0;
+    return 0;
   }
 
   while (1) {
@@ -68,24 +88,24 @@ int main(void) {
   return 0;
 }
 
-  // RobotRunner* _robotRunner;
-  // _robotRunner = new RobotRunner(LOWLEVEL, &ctrl);
-  // RobotRunner _robotRunner(LOWLEVEL, &ctrl);
-  // _robotRunner->controlParameters = &_robotParams;
-  // _robotRunner->Initialize();
-  // LoopFunc loop_torque_control("torque control", _robotRunner->dt,
-  //                              boost::bind(&RobotRunner::Run, _robotRunner));
-  // LoopFunc loop_udpSend("udp_send", _robotRunner->dt, 3,
-  //                       boost::bind(&RobotRunner::UDPSend, _robotRunner));
-  // LoopFunc loop_udpRecv("udp_recv", _robotRunner->dt, 3,
-  //                       boost::bind(&RobotRunner::UDPRecv, _robotRunner));
-      // for (int i = 0; i < LengthOfFile; i++)
-      // {
-      //     fileName[i] = "../data/" + fileName[i];
-      //     file[i].open(fileName[i]);
-      // }
-      // for (int i = 0; i < LengthOfFile; i++)
-      // {
-      //     for (int j = 0; j < chlc.motiontime; j++)
-      //         file[i] << j*chlc.dt << " " << _mem_fprint[i][j] <<endl;
-      // }
+// RobotRunner* _robotRunner;
+// _robotRunner = new RobotRunner(LOWLEVEL, &ctrl);
+// RobotRunner _robotRunner(LOWLEVEL, &ctrl);
+// _robotRunner->controlParameters = &_robotParams;
+// _robotRunner->Initialize();
+// LoopFunc loop_torque_control("torque control", _robotRunner->dt,
+//                              boost::bind(&RobotRunner::Run, _robotRunner));
+// LoopFunc loop_udpSend("udp_send", _robotRunner->dt, 3,
+//                       boost::bind(&RobotRunner::UDPSend, _robotRunner));
+// LoopFunc loop_udpRecv("udp_recv", _robotRunner->dt, 3,
+//                       boost::bind(&RobotRunner::UDPRecv, _robotRunner));
+// for (int i = 0; i < LengthOfFile; i++)
+// {
+//     fileName[i] = "../data/" + fileName[i];
+//     file[i].open(fileName[i]);
+// }
+// for (int i = 0; i < LengthOfFile; i++)
+// {
+//     for (int j = 0; j < chlc.motiontime; j++)
+//         file[i] << j*chlc.dt << " " << _mem_fprint[i][j] <<endl;
+// }

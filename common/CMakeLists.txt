@@ -16,7 +16,7 @@ file(GLOB_RECURSE sources "src/*.cpp" "src/Controllers/*.cpp" "src/ControlParame
 
 # Library
 add_library(biomimetics SHARED ${sources})       # produce a library used by sim/robot
-target_link_libraries(biomimetics inih dynacore_param_handler JCQP osqp)
+target_link_libraries(biomimetics inih dynacore_param_handler JCQP osqp rbdl rbdl_urdfreader)
 
 
 # add_test(NAME example_test COMMAND test-common)

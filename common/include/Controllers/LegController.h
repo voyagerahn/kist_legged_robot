@@ -14,6 +14,9 @@
 #include "cppTypes.h"
 #include "Dynamics/Quadruped.h"
 #include "../../robot/include/kist_legged_robot.h"
+#include <rbdl/addons/urdfreader/urdfreader.h>
+#include <rbdl/rbdl.h>
+
 
 using namespace UNITREE_LEGGED_SDK;
 
