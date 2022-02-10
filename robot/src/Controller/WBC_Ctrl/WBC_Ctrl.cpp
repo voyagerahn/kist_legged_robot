@@ -7,8 +7,8 @@ WBC_Ctrl<T>::WBC_Ctrl(FloatingBaseModel<T> model):
   _full_config(a1::num_act_joint + 7),
   _tau_ff(a1::num_act_joint),
   _des_jpos(a1::num_act_joint),
-  _des_jvel(a1::num_act_joint),
-  _wbcLCM(getLcmUrl(255))
+  _des_jvel(a1::num_act_joint)
+  // _wbcLCM(getLcmUrl(255))
 {
   _iter = 0;
   _full_config.setZero();

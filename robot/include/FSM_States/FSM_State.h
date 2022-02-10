@@ -7,7 +7,7 @@
 #include "TransitionData.h"
 #include "Controllers/GaitScheduler.h"
 
-// #include "../Controllers/BalanceController/BalanceController.hpp"
+#include "../../src/Controller/BalanceController/BalanceController.hpp"
 
 // Normal robot states
 #define K_PASSIVE 0
@@ -80,7 +80,7 @@ class FSM_State {
 
   //
   void runControls();
-  // void runBalanceController();
+  void runBalanceController();
   void runWholeBodyController();
   void runConvexModelPredictiveController();
   void runRegularizedPredictiveController();
@@ -123,7 +123,7 @@ class FSM_State {
 
   // Higher level Robot body controllers
 
-  // BalanceController balanceController; 
+  BalanceController balanceController; 
   
   // ModelPredictiveController cMPC
   // RegularizedPredictiveController RPC

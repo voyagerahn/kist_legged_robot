@@ -87,7 +87,9 @@ void WBIC<T>::MakeTorque(DVec<T>& cmd, void* extra_input) {
   (void)f;
 
   // pretty_print(qddot_pre, std::cout, "qddot_cmd");
-  for (size_t i(0); i < _dim_floating; ++i) qddot_pre[i] += z[i];
+  for (size_t i(0); i < _dim_floating; ++i) {
+    qddot_pre[i] += z[i];
+  }
   _GetSolution(qddot_pre, cmd);
 
   _data->_opt_result = DVec<T>(_dim_opt);

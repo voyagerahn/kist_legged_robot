@@ -17,7 +17,8 @@ add_subdirectory(src/Controller/WBC_Ctrl)
 file(GLOB_RECURSE sources
 "./*.cpp"
 "FSM_States/*.cpp" 
-)
+"Controller/BalanceController/*.cpp"
+"Controller/convexMPC/*.cpp")
 
 link_directories(lib)
 link_directories(./lib)
@@ -43,8 +44,7 @@ target_link_libraries(kist_controller WBC_Ctrl)
 # # "Controllers/convexMPC/*.cpp")
 # file(GLOB_RECURSE sources "./*.cpp")
 
-# # add_subdirectory(Controllers/WBC)
-# # add_subdirectory(Controllers/WBC_Ctrl)
+
 # # add_subdirectory(Controllers/VisionMPC)
 
 # add_executable(kist_controller ${sources} KIST_Controller.cpp main.cpp)

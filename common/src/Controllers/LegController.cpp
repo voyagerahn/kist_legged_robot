@@ -9,6 +9,8 @@
 
 #include "Controllers/LegController.h"
 
+#include <time.h>
+
 /*!
  * Zero the leg command so the leg will not output torque
  */
@@ -78,23 +80,43 @@ void LegController<T>::updateData(const LowState* state) {
     // J and p
     computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q, &(datas[leg].J),
                                      &(datas[leg].p), leg);
-    datas[leg].v = datas[leg].J * datas[leg].qd;
+    // datas[leg].v = datas[leg].J * datas[leg].qd;
   }
+
   _q << 0, 0, 0, state->imu.quaternion[1], state->imu.quaternion[2],
-      state->imu.quaternion[3], datas[0].q(0), datas[0].q(1), datas[0].q(2),
-      datas[1].q(0), datas[1].q(1), datas[1].q(2), datas[2].q(0), datas[2].q(1),
-      datas[2].q(2), datas[3].q(0), datas[3].q(1), datas[3].q(2),
+      state->imu.quaternion[3], datas[1].q(0), datas[1].q(1), datas[1].q(2),
+      datas[0].q(0), datas[0].q(1), datas[0].q(2), datas[3].q(0), datas[3].q(1),
+      datas[3].q(2), datas[2].q(0), datas[2].q(1), datas[2].q(2),
       state->imu.quaternion[0];
 
   _dq << 0, 0, 0, state->imu.quaternion[1], state->imu.quaternion[2],
-      state->imu.quaternion[3], datas[0].q(0), datas[0].qd(1), datas[0].qd(2),
-      datas[1].qd(0), datas[1].qd(1), datas[1].qd(2), datas[2].qd(0),
-      datas[2].qd(1), datas[2].qd(2), datas[3].qd(0), datas[3].qd(1),
-      datas[3].qd(2);
-    
-  m.update_kinematics(_q,_dq);
+      state->imu.quaternion[3], datas[1].q(0), datas[1].qd(1), datas[1].qd(2),
+      datas[0].qd(0), datas[0].qd(1), datas[0].qd(2), datas[3].qd(0),
+      datas[3].qd(1), datas[3].qd(2), datas[2].qd(0), datas[2].qd(1),
+      datas[2].qd(2);
+  m.update_kinematics(_q, _dq);
+  m.update_dynamics();
   m.calculate_EE_Jacobians();
   m.calculate_foot_Jacobians();
+  m.calculate_EE_positions_orientations();
+
+  // cout << "--------------------------" << endl;
+  // cout <<"data :" <<datas[1].p.transpose() << endl;
+  // cout <<"rbdl :" <<m._x_left_front_leg.transpose() << endl;
+  // cout << "--------------------------" << endl;
+
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      datas[0].J(i, j) = m._J_FR_foot(i, j);
+      datas[1].J(i, j) = m._J_FL_foot(i, j);
+      datas[2].J(i, j) = m._J_RR_foot(i, j);
+      datas[3].J(i, j) = m._J_RL_foot(i, j);
+    }
+  }
+  datas[0].v = datas[0].J * datas[0].qd;
+  datas[1].v = datas[1].J * datas[1].qd;
+  datas[2].v = datas[2].J * datas[2].qd;
+  datas[3].v = datas[3].J * datas[3].qd;
 }
 
 /*!
@@ -107,12 +129,16 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // forceFF
     Vec3<T> footForce = commands[leg].forceFeedForward;
 
+
+    
     footForce +=
         commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p) +
         commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
 
     // cout<< leg << " footForce : " << footForce.transpose()<<endl;
     // cout << "--------------------------------------" << endl;
+    cout << leg << " vDes : " << commands[leg].vDes.transpose() << endl;
+    cout << "--------------------------------------" << endl;
 
     // Torque
     legTorque += datas[leg].J.transpose() * footForce;
@@ -220,124 +246,6 @@ void computeLegJacobianAndPosition(Quadruped<T>& quad, Vec3<T>& q, Mat3<T>* J,
         (l1 + l4) * sideSign * s1 - l3 * (c1 * c23) - l2 * c1 * c2;
   }
 }
-
-// template <typename T>
-// void computeLegJacobian(RigidBodyDynamics::Model& _model, DVec<T>& _q,
-//                         Quat<T>& orientation, DMat<T>* J) {
-//   Vec3<T> _position_local_task_left_front_leg;
-//   Vec3<T> _position_local_task_right_front_leg;
-//   Vec3<T> _position_local_task_left_rear_leg;
-//   Vec3<T> _position_local_task_right_rear_leg;
-//   DMat<T> _J_foot, _J_FR_foot, _J_FL_foot, _J_RR_foot, _J_RL_foot;
-//   DMat<T> _J_left_front_leg, _J_right_front_leg, _J_left_rear_leg,
-//       _J_right_rear_leg, _J_tmp;
-//   int _id_left_front_leg = 2147483648;   // FL
-//   int _id_right_front_leg = 2147483650;  // Fr
-//   int _id_left_rear_leg = 2147483652;    // RL
-//   int _id_right_rear_leg = 2147483654;   // RR
-//   _position_local_task_left_front_leg.setZero();
-//   _position_local_task_right_front_leg.setZero();
-//   _position_local_task_left_rear_leg.setZero();
-//   _position_local_task_right_rear_leg.setZero();
-//   _J_foot.setZero(12, 12);
-//   _J_FR_foot.setZero(3, 3);
-//   _J_FL_foot.setZero(3, 3);
-//   _J_RR_foot.setZero(3, 3);
-//   _J_RL_foot.setZero(3, 3);
-//   _J_tmp.setZero();
-//   _J_left_front_leg.setZero(3, 18);
-//   _J_right_front_leg.setZero(3, 18);
-//   _J_left_rear_leg.setZero(3, 18);
-//   _J_right_rear_leg.setZero(3, 18);
-//   _J_tmp.setZero(6, 18);
-//   _J_right_front_leg.setZero();
-//   RigidBodyDynamics::CalcPointJacobian6D(_model, _q, _id_right_front_leg,
-//                                          _position_local_task_right_front_leg,
-//                                          _J_tmp, false);  // right front hand
-//   _J_right_front_leg = _J_tmp.block<3, 18>(3, 0);
-
-//   _J_FR_foot << _J_right_front_leg(0, 9), _J_right_front_leg(0, 10),
-//       _J_right_front_leg(0, 11), _J_right_front_leg(1, 9),
-//       _J_right_front_leg(1, 10), _J_right_front_leg(1, 11),
-//       _J_right_front_leg(2, 9), _J_right_front_leg(2, 10),
-//       _J_right_front_leg(2, 11);
-
-//   _J_left_front_leg.setZero();
-//   RigidBodyDynamics::CalcPointJacobian6D(_model, _q, _id_left_front_leg,
-//                                          _position_local_task_left_front_leg,
-//                                          _J_tmp, false);  // left front leg
-//   _J_left_front_leg = _J_tmp.block<3, 18>(3, 0);
-
-//   _J_FL_foot << _J_left_front_leg(0, 6), _J_left_front_leg(0, 7),
-//       _J_left_front_leg(0, 8), _J_left_front_leg(1, 6), _J_left_front_leg(1, 7),
-//       _J_left_front_leg(1, 8), _J_left_front_leg(2, 6), _J_left_front_leg(2, 7),
-//       _J_left_front_leg(2, 8);
-
-//   _J_right_rear_leg.setZero();
-//   RigidBodyDynamics::CalcPointJacobian6D(_model, _q, _id_right_rear_leg,
-//                                          _position_local_task_right_rear_leg,
-//                                          _J_tmp, false);  // right rear hand
-//   _J_right_rear_leg = _J_tmp.block<3, 18>(3, 0);
-
-//   _J_RR_foot << _J_right_rear_leg(0, 15), _J_right_rear_leg(0, 16),
-//       _J_right_rear_leg(0, 17), _J_right_rear_leg(1, 15),
-//       _J_right_rear_leg(1, 16), _J_right_rear_leg(1, 17),
-//       _J_right_rear_leg(2, 15), _J_right_rear_leg(2, 16),
-//       _J_right_rear_leg(2, 17);
-
-//   _J_left_rear_leg.setZero();
-//   RigidBodyDynamics::CalcPointJacobian6D(_model, _q, _id_left_rear_leg,
-//                                          _position_local_task_left_rear_leg,
-//                                          _J_tmp, false);  // left rear hand
-//   _J_left_rear_leg = _J_tmp.block<3, 18>(3, 0);
-
-//   _J_RL_foot << _J_left_rear_leg(0, 12), _J_left_rear_leg(0, 13),
-//       _J_left_rear_leg(0, 14), _J_left_rear_leg(1, 12), _J_left_rear_leg(1, 13),
-//       _J_left_rear_leg(1, 14), _J_left_rear_leg(2, 12), _J_left_rear_leg(2, 13),
-//       _J_left_rear_leg(2, 14);
-
-//   if (J) {
-//     J->operator()(0, 0) = _J_FR_foot(0, 0);
-//     J->operator()(0, 1) = _J_FR_foot(0, 1);
-//     J->operator()(0, 2) = _J_FR_foot(0, 2);
-//     J->operator()(1, 0) = _J_FR_foot(1, 0);
-//     J->operator()(1, 1) = _J_FR_foot(1, 1);
-//     J->operator()(1, 2) = _J_FR_foot(1, 2);
-//     J->operator()(2, 0) = _J_FR_foot(2, 0);
-//     J->operator()(2, 1) = _J_FR_foot(2, 1);
-//     J->operator()(2, 2) = _J_FR_foot(2, 2);
-
-//     J->operator()(3, 3) = _J_FL_foot(0, 0);
-//     J->operator()(3, 4) = _J_FL_foot(0, 1);
-//     J->operator()(3, 5) = _J_FL_foot(0, 2);
-//     J->operator()(4, 3) = _J_FL_foot(1, 0);
-//     J->operator()(4, 4) = _J_FL_foot(1, 1);
-//     J->operator()(4, 5) = _J_FL_foot(1, 2);
-//     J->operator()(5, 3) = _J_FL_foot(2, 0);
-//     J->operator()(5, 4) = _J_FL_foot(2, 1);
-//     J->operator()(5, 5) = _J_FL_foot(2, 2);
-
-//     J->operator()(6, 6) = _J_RR_foot(0, 0);
-//     J->operator()(6, 7) = _J_RR_foot(0, 1);
-//     J->operator()(6, 8) = _J_RR_foot(0, 2);
-//     J->operator()(7, 6) = _J_RR_foot(1, 0);
-//     J->operator()(7, 7) = _J_RR_foot(1, 1);
-//     J->operator()(7, 8) = _J_RR_foot(1, 2);
-//     J->operator()(8, 6) = _J_RR_foot(2, 0);
-//     J->operator()(8, 7) = _J_RR_foot(2, 1);
-//     J->operator()(8, 8) = _J_RR_foot(2, 2);
-
-//     J->operator()(9, 9) = _J_RL_foot(0, 0);
-//     J->operator()(9, 10) = _J_RL_foot(0, 1);
-//     J->operator()(9, 11) = _J_RL_foot(0, 2);
-//     J->operator()(10, 9) = _J_RL_foot(1, 0);
-//     J->operator()(10, 10) = _J_RL_foot(1, 1);
-//     J->operator()(10, 11) = _J_RL_foot(1, 2);
-//     J->operator()(11, 9) = _J_RL_foot(2, 0);
-//     J->operator()(11, 10) = _J_RL_foot(2, 1);
-//     J->operator()(11, 11) = _J_RL_foot(2, 2);
-//   }
-// }
 
 template void computeLegJacobianAndPosition<double>(Quadruped<double>& quad,
                                                     Vec3<double>& q,

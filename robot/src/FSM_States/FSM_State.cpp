@@ -210,96 +210,95 @@ void FSM_State<T>::runControls() {
 /**
  *
  */
-// template <typename T>
-// void FSM_State<T>::runBalanceController() {
-//   double minForce = 25;
-//   double maxForce = 500;
-//   double contactStateScheduled[4];  // = {1, 1, 1, 1};
-//   for (int i = 0; i < 4; i++) {
-//     contactStateScheduled[i] =
-//         _data->_gaitScheduler->gaitData.contactStateScheduled(i);
-//   }
+template <typename T>
+void FSM_State<T>::runBalanceController() {
+  double minForce = 25;
+  double maxForce = 500;
+  double contactStateScheduled[4];  // = {1, 1, 1, 1};
+  for (int i = 0; i < 4; i++) {
+    contactStateScheduled[i] =
+        _data->_gaitScheduler->gaitData.contactStateScheduled(i);
+  }
 
-//   double minForces[4];  // = {minForce, minForce, minForce, minForce};
-//   double maxForces[4];  // = {maxForce, maxForce, maxForce, maxForce};
-//   for (int leg = 0; leg < 4; leg++) {
-//     minForces[leg] = contactStateScheduled[leg] * minForce;
-//     maxForces[leg] = contactStateScheduled[leg] * maxForce;
-//   }
+  double minForces[4];  // = {minForce, minForce, minForce, minForce};
+  double maxForces[4];  // = {maxForce, maxForce, maxForce, maxForce};
+  for (int leg = 0; leg < 4; leg++) {
+    minForces[leg] = contactStateScheduled[leg] * minForce;
+    maxForces[leg] = contactStateScheduled[leg] * maxForce;
+  }
 
-//   double COM_weights_stance[3] = {1, 1, 10};
-//   double Base_weights_stance[3] = {20, 10, 10};
-//   double pFeet[12], p_des[3], p_act[3], v_des[3], v_act[3], O_err[3], rpy[3],
-//       omegaDes[3];
-//   double se_xfb[13];
-//   double kpCOM[3], kdCOM[3], kpBase[3], kdBase[3];
+  double COM_weights_stance[3] = {1, 1, 10};
+  double Base_weights_stance[3] = {20, 10, 10};
+  double pFeet[12], p_des[3], p_act[3], v_des[3], v_act[3], O_err[3], rpy[3],
+      omegaDes[3];
+  double se_xfb[13];
+  double kpCOM[3], kdCOM[3], kpBase[3], kdBase[3];
 
-//   for (int i = 0; i < 4; i++) {
-//     se_xfb[i] = (double)_data->_stateEstimator->getResult().orientation(i);
-//   }
-//   // se_xfb[3] = 1.0;
-//   for (int i = 0; i < 3; i++) {
-//     rpy[i] = 0;  //(double)_data->_stateEstimator->getResult().rpy(i);
-//     p_des[i] = (double)_data->_stateEstimator->getResult().position(i);
-//     p_act[i] = (double)_data->_stateEstimator->getResult().position(i);
-//     omegaDes[i] =
-//         0;  //(double)_data->_stateEstimator->getResult().omegaBody(i);
-//     v_act[i] = (double)_data->_stateEstimator->getResult().vBody(i);
-//     v_des[i] = (double)_data->_stateEstimator->getResult().vBody(i);
+  for (int i = 0; i < 4; i++) {
+    se_xfb[i] = (double)_data->_stateEstimator->getResult().orientation(i);
+  }
+  // se_xfb[3] = 1.0;
+  for (int i = 0; i < 3; i++) {
+    rpy[i] = 0;  //(double)_data->_stateEstimator->getResult().rpy(i);
+    p_des[i] = (double)_data->_stateEstimator->getResult().position(i);
+    p_act[i] = (double)_data->_stateEstimator->getResult().position(i);
+    omegaDes[i] =
+        0;  //(double)_data->_stateEstimator->getResult().omegaBody(i);
+    v_act[i] = (double)_data->_stateEstimator->getResult().vBody(i);
+    v_des[i] = (double)_data->_stateEstimator->getResult().vBody(i);
 
-//     se_xfb[4 + i] = (double)_data->_stateEstimator->getResult().position(i);
-//     se_xfb[7 + i] = (double)_data->_stateEstimator->getResult().omegaBody(i);
-//     se_xfb[10 + i] = (double)_data->_stateEstimator->getResult().vBody(i);
+    se_xfb[4 + i] = (double)_data->_stateEstimator->getResult().position(i);
+    se_xfb[7 + i] = (double)_data->_stateEstimator->getResult().omegaBody(i);
+    se_xfb[10 + i] = (double)_data->_stateEstimator->getResult().vBody(i);
 
-//     // Set the translational and orientation gains
-//     kpCOM[i] = (double)_data->controlParameters->kpCOM(i);
-//     kdCOM[i] = (double)_data->controlParameters->kdCOM(i);
-//     kpBase[i] = (double)_data->controlParameters->kpBase(i);
-//     kdBase[i] = (double)_data->controlParameters->kdBase(i);
-//   }
+    // Set the translational and orientation gains
+    kpCOM[i] = (double)_data->controlParameters->kpCOM(i);
+    kdCOM[i] = (double)_data->controlParameters->kdCOM(i);
+    kpBase[i] = (double)_data->controlParameters->kpBase(i);
+    kdBase[i] = (double)_data->controlParameters->kdBase(i);
+  }
 
-//   Vec3<T> pFeetVec;
-//   Vec3<T> pFeetVecCOM;
-//   // Get the foot locations relative to COM
-//   for (int leg = 0; leg < 4; leg++) {
-//     computeLegJacobianAndPosition(**&_data->_quadruped,
-//                                   _data->_legController->datas[leg].q,
-//                                   (Mat3<T>*)nullptr, &pFeetVec, 1);
-//     //pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
-//                   //(_data->_quadruped->getHipLocation(leg) + pFeetVec);
+  Vec3<T> pFeetVec;
+  Vec3<T> pFeetVecCOM;
+  // Get the foot locations relative to COM
+  for (int leg = 0; leg < 4; leg++) {
+    computeLegJacobianAndPosition(**&_data->_quadruped,
+                                  _data->_legController->datas[leg].q,
+                                  (Mat3<T>*)nullptr, &pFeetVec, 1);
+    //pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
+                  //(_data->_quadruped->getHipLocation(leg) + pFeetVec);
 
-//     pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
-//                   (_data->_quadruped->getHipLocation(leg) +
-//                   _data->_legController->datas[leg].p);
+    pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
+                  (_data->_quadruped->getHipLocation(leg) +
+                  _data->_legController->datas[leg].p);
 
-//     pFeet[leg * 3] = (double)pFeetVecCOM[0];
-//     pFeet[leg * 3 + 1] = (double)pFeetVecCOM[1];
-//     pFeet[leg * 3 + 2] = (double)pFeetVecCOM[2];
-//   }
+    pFeet[leg * 3] = (double)pFeetVecCOM[0];
+    pFeet[leg * 3 + 1] = (double)pFeetVecCOM[1];
+    pFeet[leg * 3 + 2] = (double)pFeetVecCOM[2];
+  }
 
-//   balanceController.set_alpha_control(0.01);
-//   balanceController.set_friction(0.5);
-//   balanceController.set_mass(46.0);
-//   balanceController.set_wrench_weights(COM_weights_stance,
-//   Base_weights_stance); balanceController.set_PDgains(kpCOM, kdCOM, kpBase,
-//   kdBase); balanceController.set_desiredTrajectoryData(rpy, p_des, omegaDes,
-//   v_des); balanceController.SetContactData(contactStateScheduled, minForces,
-//   maxForces); balanceController.updateProblemData(se_xfb, pFeet, p_des,
-//   p_act, v_des, v_act,
-//                                       O_err, 0.0);
+  balanceController.set_alpha_control(0.01);
+  balanceController.set_friction(0.5);
+  balanceController.set_mass(46.0);
+  balanceController.set_wrench_weights(COM_weights_stance, Base_weights_stance);
+  balanceController.set_PDgains(kpCOM, kdCOM, kpBase, kdBase);
+  balanceController.set_desiredTrajectoryData(rpy, p_des, omegaDes, v_des);
+  balanceController.SetContactData(contactStateScheduled, minForces, maxForces);
+  balanceController.updateProblemData(se_xfb, pFeet, p_des, p_act, v_des, v_act,
+                                      O_err, 0.0);
 
-//   double fOpt[12];
-//   balanceController.solveQP_nonThreaded(fOpt);
+  double fOpt[12];
+  balanceController.solveQP_nonThreaded(fOpt);
 
-//   // Publish the results over LCM
-//   balanceController.publish_data_lcm();
+  // Publish the results over LCM
+  // balanceController.publish_data_lcm();
 
-//   // Copy the results to the feed forward forces
-//   for (int leg = 0; leg < 4; leg++) {
-//     footFeedForwardForces.col(leg) << (T)fOpt[leg * 3], (T)fOpt[leg * 3 + 1],
-//         (T)fOpt[leg * 3 + 2];
-//   }
-// }
+  // Copy the results to the feed forward forces
+  for (int leg = 0; leg < 4; leg++) {
+    footFeedForwardForces.col(leg) << (T)fOpt[leg * 3], (T)fOpt[leg * 3 + 1],
+        (T)fOpt[leg * 3 + 2];
+  }
+}
 
 /**
  * Gait independent formulation for choosing appropriate GRF and step locations

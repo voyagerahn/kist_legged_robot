@@ -62,7 +62,7 @@ class WBC_Ctrl{
 
     unsigned long long _iter;
 
-    lcm::LCM _wbcLCM;
+    // lcm::LCM _wbcLCM;
     // wbc_test_data_t _wbc_data_lcm;
 };
 #endif

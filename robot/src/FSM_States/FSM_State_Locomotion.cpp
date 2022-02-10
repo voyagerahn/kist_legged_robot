@@ -202,7 +202,7 @@ bool FSM_State_Locomotion<T>::locomotionSafe() {
       return false;
     }
 
-    if(std::fabs(p_leg[1] > 0.18)) {
+    if(std::fabs(p_leg[1] > 0.18)|| std::fabs(p_leg[1] < -0.18)) {
       printf("Unsafe locomotion: leg %d's y-position is bad (%.3f m)\n", leg, p_leg[1]);
       return false;
     }
