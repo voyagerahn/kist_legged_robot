@@ -1,12 +1,12 @@
-#ifndef A1_SOFTWARE_CONVEXMPCLOCOMOTION_H
-#define A1_SOFTWARE_CONVEXMPCLOCOMOTION_H
+#ifndef KIST_A1_LOCOMOTION_H
+#define KIST_A1_LOCOMOTION_H
 
 #include <Controllers/FootSwingTrajectory.h>
 #include <FSM_States/ControlFSMData.h>
 #include <SparseCMPC/SparseCMPC.h>
 #include "cppTypes.h"
 #include "Gait.h"
-
+#include "../BalanceController/BalanceController.hpp"
 #include <cstdio>
 
 using Eigen::Array4f;
@@ -14,76 +14,16 @@ using Eigen::Array4i;
 
 
 template<typename T>
-struct CMPC_Result {
+struct CLocomotion_Result {
   LegControllerCommand<T> commands[4];
   Vec4<T> contactPhase;
 };
 
-struct CMPC_Jump {
-  static constexpr int START_SEG = 6;
-  static constexpr int END_SEG = 0;
-  static constexpr int END_COUNT = 2;
-  bool jump_pending = false;
-  bool jump_in_progress = false;
-  bool pressed = false;
-  int seen_end_count = 0;
-  int last_seg_seen = 0;
-  int jump_wait_counter = 0;
-
-  void debug(int seg) {
-    (void)seg;
-    //printf("[%d] pending %d running %d\n", seg, jump_pending, jump_in_progress);
-  }
-
-  void trigger_pressed(int seg, bool trigger) {
-    (void)seg;
-    if(!pressed && trigger) {
-      if(!jump_pending && !jump_in_progress) {
-        jump_pending = true;
-        //printf("jump pending @ %d\n", seg);
-      }
-    }
-    pressed = trigger;
-  }
-
-  bool should_jump(int seg) {
-    debug(seg);
-
-    if(jump_pending && seg == START_SEG) {
-      jump_pending = false;
-      jump_in_progress = true;
-      //printf("jump begin @ %d\n", seg);
-      seen_end_count = 0;
-      last_seg_seen = seg;
-      return true;
-    }
-
-    if(jump_in_progress) {
-      if(seg == END_SEG && seg != last_seg_seen) {
-        seen_end_count++;
-        if(seen_end_count == END_COUNT) {
-          seen_end_count = 0;
-          jump_in_progress = false;
-          //printf("jump end @ %d\n", seg);
-          last_seg_seen = seg;
-          return false;
-        }
-      }
-      last_seg_seen = seg;
-      return true;
-    }
-
-    last_seg_seen = seg;
-    return false;
-  }
-};
-
-
-class ConvexMPCLocomotion {
+class Locomotion {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  ConvexMPCLocomotion(float _dt, int _iterations_between_mpc, KIST_UserParameters* parameters);
+  Locomotion(float _dt, int _iterations_between_mpc, KIST_UserParameters* parameters);
   void initialize();
 
   template<typename T>
@@ -105,7 +45,24 @@ public:
 
   Vec4<float> contact_state;
 
-private:
+  BalanceController balanceController;
+  double minForce = 25;
+  double maxForce = 500;
+  double contactStateScheduled[4];  // = {1, 1, 1, 1};
+  double minForces[4];  // = {minForce, minForce, minForce, minForce};
+  double maxForces[4];  // = {maxForce, maxForce, maxForce, maxForce};
+  double COM_weights_stance[3] = {1, 1, 10};
+  double Base_weights_stance[3] = {20, 10, 10};
+  double pFeet[12], p_des[3], p_act[3], v_des[3], v_act[3], O_err[3], rpy[3],
+      omegaDes[3];
+  double se_xfb[13];
+  double kpCOM[3], kdCOM[3], kpBase[3], kdBase[3];
+  
+  Vec3<float> pFeetVec;
+  Vec3<float> pFeetVecCOM;
+  double fOpt[12];
+
+ private:
   void _SetupCommand(ControlFSMData<float> & data);
 
   float _yaw_turn_rate;
@@ -129,6 +86,7 @@ private:
   void solveDenseMPC(int *mpcTable, ControlFSMData<float> &data);
   void solveSparseMPC(int *mpcTable, ControlFSMData<float> &data);
   void initSparseMPC();
+  Vec3<float> foot_position_in_hip_frame_to_joint_angle(Vec3<float> pDes, int leg);
   int iterationsBetweenMPC;
   int horizonLength;
   int default_iterations_between_mpc;
@@ -153,11 +111,11 @@ private:
   Vec3<float> rpy_comp;
   float x_comp_integral = 0;
   Vec3<float> pFoot[4];
-  CMPC_Result<float> result;
+  CLocomotion_Result<float> result;
   float trajAll[12*36];
 
   KIST_UserParameters* _parameters = nullptr;
-  CMPC_Jump jump_state;
+//   CMPC_Jump jump_state;
 
   vectorAligned<Vec12<double>> _sparseTrajectory;
 

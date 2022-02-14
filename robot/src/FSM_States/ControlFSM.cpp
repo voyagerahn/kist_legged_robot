@@ -43,6 +43,7 @@ ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
   statesList.jointPD = new FSM_State_JointPD<T>(&data);
   statesList.passive = new FSM_State_Passive<T>(&data);
   statesList.standUp = new FSM_State_StandUp<T>(&data);
+  statesList.balanceWalking = new FSM_State_BalanceWalking<T>(&data);
   // statesList.balanceStand = new FSM_State_BalanceStand<T>(&data);
   statesList.locomotion = new FSM_State_Locomotion<T>(&data);
   // statesList.impedanceControl = new FSM_State_ImpedanceControl<T>(&data);
@@ -62,7 +63,7 @@ template <typename T>
 void ControlFSM<T>::initialize() {
   // Initialize a new FSM State with the control data
   // currentState = statesList.standUp;
-  currentState = statesList.locomotion;
+  currentState = statesList.balanceWalking;
   // Enter the new current state cleanly
   currentState->onEnter();
 
@@ -104,7 +105,7 @@ void ControlFSM<T>::runFSM() {
   //     //data.controlParameters->control_mode = K_FRONTJUMP;
   //   //std::cout<< "control mode: "<<data.controlParameters->control_mode<<std::endl;
   // }
-  data.controlParameters->control_mode = K_LOCOMOTION;
+  data.controlParameters->control_mode = K_BALANCE_WALKING;
 
   // Run the robot control code if operating mode is not unsafe
   if (operatingMode != FSM_OperatingMode::ESTOP) {

@@ -42,7 +42,6 @@ void FSM_State<T>::jointPDControl(int leg, Vec3<T> qDes, Vec3<T> qdDes) {
   _data->_legController->commands[leg].qdDes = qdDes;
 }
 
-
 // template <typename T>
 // void FSM_State<T>::jointLinearInterpolation(int leg, Vec3<T> qDes,
 //                                             Vec3<T> qdDes, double rate) {
@@ -72,15 +71,13 @@ void FSM_State<T>::cartesianImpedanceControl(int leg, Vec3<T> pDes,
                                              Vec3<double> kd_cartesian) {
   _data->_legController->commands[leg].pDes = pDes;
   // Create the cartesian P gain matrix
-  kpMat << kp_cartesian[0], 0, 0, 0,
-      kp_cartesian[1], 0, 0, 0,
-      kp_cartesian[2];
+  kpMat << kp_cartesian[0], 0, 0, 0, kp_cartesian[1], 0, 0, 0, kp_cartesian[2];
   _data->_legController->commands[leg].kpCartesian = kpMat;
 
   _data->_legController->commands[leg].vDes = vDes;
   // Create the cartesian D gain matrix
-  kdMat << kd_cartesian[0], 0, 0, 0, kd_cartesian[1], 0, 0, 0,
-  kd_cartesian[2]; _data->_legController->commands[leg].kdCartesian = kdMat;
+  kdMat << kd_cartesian[0], 0, 0, 0, kd_cartesian[1], 0, 0, 0, kd_cartesian[2];
+  _data->_legController->commands[leg].kdCartesian = kdMat;
 }
 
 /**
@@ -219,7 +216,6 @@ void FSM_State<T>::runBalanceController() {
     contactStateScheduled[i] =
         _data->_gaitScheduler->gaitData.contactStateScheduled(i);
   }
-
   double minForces[4];  // = {minForce, minForce, minForce, minForce};
   double maxForces[4];  // = {maxForce, maxForce, maxForce, maxForce};
   for (int leg = 0; leg < 4; leg++) {
@@ -265,12 +261,12 @@ void FSM_State<T>::runBalanceController() {
     computeLegJacobianAndPosition(**&_data->_quadruped,
                                   _data->_legController->datas[leg].q,
                                   (Mat3<T>*)nullptr, &pFeetVec, 1);
-    //pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
-                  //(_data->_quadruped->getHipLocation(leg) + pFeetVec);
+    // pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
+    //(_data->_quadruped->getHipLocation(leg) + pFeetVec);
 
     pFeetVecCOM = _data->_stateEstimator->getResult().rBody.transpose() *
                   (_data->_quadruped->getHipLocation(leg) +
-                  _data->_legController->datas[leg].p);
+                   _data->_legController->datas[leg].p);
 
     pFeet[leg * 3] = (double)pFeetVecCOM[0];
     pFeet[leg * 3 + 1] = (double)pFeetVecCOM[1];
@@ -279,7 +275,7 @@ void FSM_State<T>::runBalanceController() {
 
   balanceController.set_alpha_control(0.01);
   balanceController.set_friction(0.5);
-  balanceController.set_mass(46.0);
+  balanceController.set_mass(12.0);
   balanceController.set_wrench_weights(COM_weights_stance, Base_weights_stance);
   balanceController.set_PDgains(kpCOM, kdCOM, kpBase, kdBase);
   balanceController.set_desiredTrajectoryData(rpy, p_des, omegaDes, v_des);
@@ -289,8 +285,12 @@ void FSM_State<T>::runBalanceController() {
 
   double fOpt[12];
   balanceController.solveQP_nonThreaded(fOpt);
-
-  // Publish the results over LCM
+  // cout << fOpt[0] << "  " << fOpt[1] << "  " << fOpt[2] << "  " << fOpt[3]
+  //      << "  " << fOpt[4] << "  " << fOpt[5] << "  " << fOpt[6] << "  "
+  //      << fOpt[7] << " " << fOpt[8] << " " << fOpt[9] << " " << fOpt[10] << "  "
+  //      << fOpt[11] << "  " << fOpt[12] << endl;
+  // cout << "-------------------------------------------------" << endl;
+  // // Publish the results over LCM
   // balanceController.publish_data_lcm();
 
   // Copy the results to the feed forward forces
@@ -298,6 +298,8 @@ void FSM_State<T>::runBalanceController() {
     footFeedForwardForces.col(leg) << (T)fOpt[leg * 3], (T)fOpt[leg * 3 + 1],
         (T)fOpt[leg * 3 + 2];
   }
+  // cout << footFeedForwardForces << endl;
+  // cout << "-------------------------------------------------" << endl;
 }
 
 /**

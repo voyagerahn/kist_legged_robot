@@ -25,7 +25,7 @@ Quadruped<T> buildA1() {
   a1._bodyLength = 0.1805 * 2;
   a1._bodyWidth = 0.047 * 2;
   a1._bodyHeight = 0.05 * 2;
-  a1._abadLinkLength = 0.0838;
+  a1._abadLinkLength = 0.08505; //0.0838
   a1._hipLinkLength = 0.20;
   a1._kneeLinkY_offset = 0.004;
   a1._kneeLinkLength = 0.20;
@@ -99,8 +99,10 @@ Quadruped<T> buildA1() {
   a1._bodyInertia = bodyInertia;
 
   // locations
-  a1._abadRotorLocation = Vec3<T>(0.125, 0.049, 0);
+  a1._abadRotorLocation = Vec3<T>(0.183, 0.047, 0);
   a1._abadLocation = Vec3<T>(a1._bodyLength, a1._bodyWidth, 0) * 0.5;
+  a1._abadLocation = Vec3<T>(0.183 , 0.047, 0);
+
   a1._hipLocation = Vec3<T>(0, a1._abadLinkLength, 0);
   a1._hipRotorLocation = Vec3<T>(0, 0.04, 0);
   a1._kneeLocation = Vec3<T>(0, 0, -a1._hipLinkLength);

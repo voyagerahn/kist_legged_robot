@@ -40,7 +40,7 @@ BalanceController::BalanceController()
   xOpt_eigen.resize(NUM_VARIABLES_QP, 1);
   yOpt_eigen.resize(NUM_VARIABLES_QP + NUM_CONSTRAINTS_QP, 1);
 
-  mass = 41;
+  mass = 12;
   inertia = 0.01;
 
   /* Model and World parameters and force limits */
@@ -160,8 +160,6 @@ BalanceController::BalanceController()
   qp_not_init = 1.0;
 }
 
-void BalanceController::testFunction() { printf("testfun "); }
-
 /*
 void BalanceController::set_base_support_flag(double sflag)
 {
@@ -244,26 +242,32 @@ void BalanceController::set_actual_swing_pos(double* pFeet_act_in) {
 void BalanceController::solveQP_nonThreaded(double* xOpt) {
   // &cpu_time
   if (qp_not_init == 1.0) {
-    qp_exit_flag = QProblemObj_qpOASES.init(
-        H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
-        ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_initialGuess);
+    // qp_exit_flag = QProblemObj_qpOASES.init(
+    //     H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+    //     ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_initialGuess);
+    qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
+                                            lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+                                            ubA_qpOASES, nWSR_qpOASES);
     qp_not_init = 0.0;
 
     nWSR_initial = nWSR_qpOASES;
-    cpu_time_initial = cpu_time;
+    // cpu_time_initial = cpu_time;
   } else {
-    qp_exit_flag = QProblemObj_qpOASES.init(
-        H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
-        ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_qpOASES, yOpt_qpOASES,
-        &guessedBounds, &guessedConstraints);
+    // qp_exit_flag = QProblemObj_qpOASES.init(
+    //     H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+    //     ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_qpOASES, yOpt_qpOASES,
+    //     &guessedBounds, &guessedConstraints);
+    qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
+                                            lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+                                            ubA_qpOASES, nWSR_qpOASES);
   }
 
   QProblemObj_qpOASES.getPrimalSolution(xOpt_qpOASES);
-  QProblemObj_qpOASES.getDualSolution(yOpt_qpOASES);
+  // QProblemObj_qpOASES.getDualSolution(yOpt_qpOASES);
 
-  QProblemObj_qpOASES.getBounds(guessedBounds);
-  QProblemObj_qpOASES.getConstraints(guessedConstraints);
-
+  // QProblemObj_qpOASES.getBounds(guessedBounds);
+  // QProblemObj_qpOASES.getConstraints(guessedConstraints);
+  
   // std::cout << "cpu_time_initial = " << cpu_time_initial << "\n";
   // std::cout << "qp exit flag = " << qp_exit_flag << "\n";
   // std::cout << "nWSR_initial = " << nWSR_initial << "\n";
@@ -324,14 +328,13 @@ void BalanceController::verifyModel(double* vbd_command) {
 
 void BalanceController::calc_PDcontrol() {
   // calculate error in yaw rotated coordinates
-  error_x_rotated = R_yaw_act.transpose() * (x_COM_world_desired - x_COM_world);
-  error_dx_rotated =
-      R_yaw_act.transpose() * (xdot_COM_world_desired - xdot_COM_world);
-  matrixLogRot(R_yaw_act.transpose() * R_b_world_desired *
-                   R_b_world.transpose() * R_yaw_act,
-               orientation_error);
-  error_dtheta_rotated =
-      R_yaw_act.transpose() * (omega_b_world_desired - omega_b_world);
+  error_x_rotated = (x_COM_world_desired - x_COM_world); // R_yaw_act.transpose()*(x_COM_world_desired - x_COM_world);
+  error_dx_rotated = (xdot_COM_world_desired - xdot_COM_world);  // R_yaw_act.transpose() * (xdot_COM_world_desired - xdot_COM_world);
+  matrixLogRot(R_b_world_desired * R_b_world.transpose(), orientation_error);
+  // matrixLogRot(R_yaw_act.transpose() * R_b_world_desired *R_b_world.transpose() * R_yaw_act, orientation_error);
+  error_dtheta_rotated = (omega_b_world_desired - omega_b_world);
+
+  // R_yaw_act.transpose() * (omega_b_world_desired - omega_b_world);
 
   xddot_COM_world_desired(0) +=
       Kp_COMx * error_x_rotated(0) + Kd_COMx * error_dx_rotated(0);
@@ -351,8 +354,10 @@ void BalanceController::calc_PDcontrol() {
 
   Ig << .35, 0, 0, 0, 2.1, 0, 0, 0, 2.1;
 
-  MatrixXd II = R_yaw_act.transpose() * R_b_world * Ig * R_b_world.transpose() *
-                R_yaw_act;
+  // MatrixXd II = R_yaw_act.transpose() * R_b_world * Ig * R_b_world.transpose() *
+  //               R_yaw_act;
+
+  MatrixXd II = R_b_world * Ig * R_b_world.transpose();
 
   // See RHS of Equation (5), [R1]
   b_control << mass * (xddot_COM_world_desired + gravity),

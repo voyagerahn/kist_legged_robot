@@ -137,8 +137,8 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
 
     // cout<< leg << " footForce : " << footForce.transpose()<<endl;
     // cout << "--------------------------------------" << endl;
-    cout << leg << " vDes : " << commands[leg].vDes.transpose() << endl;
-    cout << "--------------------------------------" << endl;
+    // cout << leg << " vDes : " << commands[leg].vDes.transpose() << endl;
+    // cout << "--------------------------------------" << endl;
 
     // Torque
     legTorque += datas[leg].J.transpose() * footForce;

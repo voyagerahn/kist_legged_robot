@@ -42,8 +42,6 @@ class BalanceController {
   BalanceController();
   ~BalanceController(){};
 
-  void testFunction();
-
   // use new kinematics measurements to update QP
   void updateProblemData(double* xfb_in, double* p_feet_in, double* p_des,
                          double* p_act, double* v_des, double* v_act,
