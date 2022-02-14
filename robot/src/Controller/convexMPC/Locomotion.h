@@ -41,6 +41,13 @@ public:
   Vec3<float> vFoot_des[4];
   Vec3<float> aFoot_des[4];
 
+  Vec3<float> height_des;
+  Vec3<float> foot_target_positions;
+  Vec3<float> v_des_world;
+  Vec3<float> hip_offset;
+  Vec3<float> twisting_vector;
+  Vec3<float> hip_horizontal_velocity;
+  float foot_clearance = 0.01; //The foot clearance on the ground at the end of the swing cycle
   Vec3<float> Fr_des[4];
 
   Vec4<float> contact_state;
@@ -86,7 +93,7 @@ public:
   void solveDenseMPC(int *mpcTable, ControlFSMData<float> &data);
   void solveSparseMPC(int *mpcTable, ControlFSMData<float> &data);
   void initSparseMPC();
-  Vec3<float> foot_position_in_hip_frame_to_joint_angle(Vec3<float> pDes, int leg);
+  Vec3<float> getJointAngleFromFootPosition(Vec3<float> pDes, int leg);
   int iterationsBetweenMPC;
   int horizonLength;
   int default_iterations_between_mpc;

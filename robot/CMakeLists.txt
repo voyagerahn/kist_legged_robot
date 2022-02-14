@@ -10,7 +10,7 @@ include_directories("../../common/include/")
 include_directories("../../common/FootstepPlanner")
 include_directories("/usr/local/include/lcm/")   # lcm includes
 include_directories("/usr/include/eigen3")   # eigen includes
-# include_directories("/usr/local/include/eigen3")   # eigen includes for robot computer
+# include_directories("/usr/local/include/eigen3")   # eigen includes path for robot computer
 add_subdirectory(src/Controller/WBC)
 add_subdirectory(src/Controller/WBC_Ctrl)
 

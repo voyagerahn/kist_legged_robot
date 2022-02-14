@@ -125,7 +125,7 @@ void LegController<T>::updateData(const LowState* state) {
 template <typename T>
 void LegController<T>::updateCommand(LowCmd* cmd) {
   for (int leg = 0; leg < 4; leg++) {
-    Vec3<T> legTorque = commands[leg].tauFeedForward;
+    Vec3<T> legTorque; //= commands[leg].tauFeedForward;
     // forceFF
     Vec3<T> footForce = commands[leg].forceFeedForward;
 
@@ -141,11 +141,24 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // cout << "--------------------------------------" << endl;
 
     // Torque
-    legTorque += datas[leg].J.transpose() * footForce;
+    // legTorque += datas[leg].J.transpose() * footForce;
 
-    // legTorque = commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
-    //             commands[leg].kdJoint * (commands[leg].qdDes -
-    //             datas[leg].qd);
+    legTorque = commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
+                commands[leg].kdJoint * (commands[leg].qdDes -
+                datas[leg].qd);
+    // if(leg == 0 || leg == 3){
+    //   cout << leg << "  leg   " << endl;
+    //   cout << "Kp :  " << commands[leg].kpJoint << endl;
+    //   cout << "qDes :  " << commands[leg].qDes.transpose() << endl;
+    //   cout << "q :  " << datas[leg].q.transpose() << endl;
+    //   cout << "qDes-q :  " << (commands[leg].qDes - datas[leg].q).transpose()
+    //        << endl;
+    //   cout << "torque :  " << legTorque.transpose() << endl;
+    // }
+    if (leg == 0 || leg == 3) {
+      cout << leg << "  leg "
+           << "torque :  " << legTorque.transpose() << endl;
+    }
 
     legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
     legTorque(1) = (legTorque(1) > torque_limit) ? torque_limit : legTorque(1);
@@ -163,9 +176,9 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     //   cout << "--------------------------------------" << endl;
     // }
     // set command
-    // cmd->motorCmd[3 * leg].tau = legTorque(0);
-    // cmd->motorCmd[3 * leg + 1].tau = legTorque(1);
-    // cmd->motorCmd[3 * leg + 2].tau = legTorque(2);
+    cmd->motorCmd[3 * leg].tau = legTorque(0);
+    cmd->motorCmd[3 * leg + 1].tau = legTorque(1);
+    cmd->motorCmd[3 * leg + 2].tau = legTorque(2);
   }
 
   cmd->motorCmd[0].tau = 0.0;
@@ -180,9 +193,9 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   cmd->motorCmd[7].tau = 0.0;
   cmd->motorCmd[8].tau = 0.0;
 
-  cmd->motorCmd[9].tau = 0.0;
-  cmd->motorCmd[10].tau = 0.0;
-  cmd->motorCmd[11].tau = 0.0;
+  // cmd->motorCmd[9].tau = 0.0;
+  // cmd->motorCmd[10].tau = 0.0;
+  // cmd->motorCmd[11].tau = 0.0;
 
   // // estimate torque
   // datas[leg].tauEstimate =

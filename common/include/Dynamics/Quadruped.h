@@ -102,6 +102,7 @@ class Quadruped {
                  0);
     return pHip;
   }
+
   // /*!
   //  * Get location of the foot for the given leg in robot frame
   //  */
