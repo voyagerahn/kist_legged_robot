@@ -115,7 +115,7 @@ class Quadruped {
   /*!
    * Get location of the foot for the given leg in hip frame
    */
-  Vec3<T> get_Foot_Position_In_Hip_Frame(Quadruped<T>& quad, Vec3<float> jointAngle, int leg) {
+  Vec3<T> getFootPositionInHipFrame(Quadruped<T>& quad, Vec3<float> jointAngle, int leg) {
     T l_hip = quad._hipLinkLength;
     T l_knee = quad._kneeLinkLength;
     T l_abad = quad._abadLinkLength * quad.getSideSign(leg);

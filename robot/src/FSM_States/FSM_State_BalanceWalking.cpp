@@ -20,7 +20,6 @@ FSM_State_BalanceWalking<T>::FSM_State_BalanceWalking(
                    "BALANCE_WALKING") {
   cLocomotion = new Locomotion(
       _controlFSMData->controlParameters->controller_dt,
-      27 / (1000. * _controlFSMData->controlParameters->controller_dt),
       _controlFSMData->userParameters);
   // Set the pre controls safety checks
   this->turnOnAllSafetyChecks();

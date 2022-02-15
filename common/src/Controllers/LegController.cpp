@@ -155,10 +155,10 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     //        << endl;
     //   cout << "torque :  " << legTorque.transpose() << endl;
     // }
-    if (leg == 0 || leg == 3) {
-      cout << leg << "  leg "
-           << "torque :  " << legTorque.transpose() << endl;
-    }
+    // if (leg == 0 || leg == 3) {
+    //   cout << leg << "  leg "
+    //        << "torque :  " << legTorque.transpose() << endl;
+    // }
 
     legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
     legTorque(1) = (legTorque(1) > torque_limit) ? torque_limit : legTorque(1);
@@ -193,9 +193,9 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   cmd->motorCmd[7].tau = 0.0;
   cmd->motorCmd[8].tau = 0.0;
 
-  // cmd->motorCmd[9].tau = 0.0;
-  // cmd->motorCmd[10].tau = 0.0;
-  // cmd->motorCmd[11].tau = 0.0;
+  cmd->motorCmd[9].tau = 0.0;
+  cmd->motorCmd[10].tau = 0.0;
+  cmd->motorCmd[11].tau = 0.0;
 
   // // estimate torque
   // datas[leg].tauEstimate =
