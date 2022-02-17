@@ -126,14 +126,15 @@ template <typename T>
 void LegController<T>::updateCommand(LowCmd* cmd) {
   for (int leg = 0; leg < 4; leg++) {
     Vec3<T> legTorque; //= commands[leg].tauFeedForward;
+    Vec3<T> footForce;
+    footForce.setZero();
+    legTorque.setZero();
     // forceFF
-    Vec3<T> footForce = commands[leg].forceFeedForward;
+    footForce = commands[leg].forceFeedForward;
 
-
-    
-    footForce +=
-        commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p) +
-        commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
+    // footForce +=
+    //     commands[leg].kpCartesian * (commands[leg].pDes - datas[leg].p) +
+    //     commands[leg].kdCartesian * (commands[leg].vDes - datas[leg].v);
 
     // cout<< leg << " footForce : " << footForce.transpose()<<endl;
     // cout << "--------------------------------------" << endl;
@@ -141,9 +142,12 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // cout << "--------------------------------------" << endl;
 
     // Torque
-    // legTorque += datas[leg].J.transpose() * footForce;
-
-    legTorque = commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
+    
+    legTorque = datas[leg].J.transpose() * footForce;
+    // if (leg == 3) {
+    //   cout << leg << "  leg before torque :  " << legTorque.transpose() << endl;
+    // }
+    legTorque += commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
                 commands[leg].kdJoint * (commands[leg].qdDes -
                 datas[leg].qd);
     // if(leg == 0 || leg == 3){
@@ -155,9 +159,9 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     //        << endl;
     //   cout << "torque :  " << legTorque.transpose() << endl;
     // }
-    if (leg == 0 || leg == 3) {
-      cout << leg << "  leg "
-           << "torque :  " << legTorque.transpose() << endl;
+    if (leg == 2) {
+      cout << leg << "  leg torque :  " << legTorque.transpose() << endl;
+      cout << "---------------------------------------------------" << endl;
     }
 
     legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
@@ -170,11 +174,6 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
         (legTorque(1) < -torque_limit) ? -torque_limit : legTorque(1);
     legTorque(2) =
         (legTorque(2) < -torque_limit) ? -torque_limit : legTorque(2);
-
-    // if (leg == 2) {
-    //   cout << leg << " legTorque : " << legTorque.transpose() << endl;
-    //   cout << "--------------------------------------" << endl;
-    // }
     // set command
     cmd->motorCmd[3 * leg].tau = legTorque(0);
     cmd->motorCmd[3 * leg + 1].tau = legTorque(1);
@@ -189,13 +188,13 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
   cmd->motorCmd[4].tau = 0.0;
   cmd->motorCmd[5].tau = 0.0;
 
-  cmd->motorCmd[6].tau = 0.0;
-  cmd->motorCmd[7].tau = 0.0;
-  cmd->motorCmd[8].tau = 0.0;
+  // cmd->motorCmd[6].tau = 0.0;
+  // cmd->motorCmd[7].tau = 0.0;
+  // cmd->motorCmd[8].tau = 0.0;
 
-  // cmd->motorCmd[9].tau = 0.0;
-  // cmd->motorCmd[10].tau = 0.0;
-  // cmd->motorCmd[11].tau = 0.0;
+  cmd->motorCmd[9].tau = 0.0;
+  cmd->motorCmd[10].tau = 0.0;
+  cmd->motorCmd[11].tau = 0.0;
 
   // // estimate torque
   // datas[leg].tauEstimate =

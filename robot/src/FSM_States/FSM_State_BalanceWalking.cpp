@@ -20,7 +20,6 @@ FSM_State_BalanceWalking<T>::FSM_State_BalanceWalking(
                    "BALANCE_WALKING") {
   cLocomotion = new Locomotion(
       _controlFSMData->controlParameters->controller_dt,
-      27 / (1000. * _controlFSMData->controlParameters->controller_dt),
       _controlFSMData->userParameters);
   // Set the pre controls safety checks
   this->turnOnAllSafetyChecks();
@@ -195,14 +194,8 @@ void FSM_State_BalanceWalking<T>::onExit() {
  */
 template <typename T>
 void FSM_State_BalanceWalking<T>::BalanceStandStep() {
-  // this->runBalanceController();
-  // cLocomotion->run<T>(*this->_data);
-  cLocomotion->run<T>(*this->_data);
-  Vec3<T> pDes_backup[4];
-  Vec3<T> vDes_backup[4];
-  Mat3<T> Kp_backup[4];
-  Mat3<T> Kd_backup[4];
 
+  cLocomotion->run<T>(*this->_data);
 }
 
 // template class FSM_State_BalanceWalking<double>;

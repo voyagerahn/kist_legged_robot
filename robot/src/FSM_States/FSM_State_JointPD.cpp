@@ -43,7 +43,7 @@ template <typename T>
 void FSM_State_JointPD<T>::run() {
   // This is just a test, should be running whatever other code you want
   Vec3<T> qDes;
-  qDes << 0, 0.87, -1.48;
+  qDes << 0, 0.87, -1.8;
   Vec3<T> qdDes;
   qdDes << 0, 0, 0;
 

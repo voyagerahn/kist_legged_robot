@@ -42,24 +42,13 @@ void Locomotion::_SetupCommand(ControlFSMData<float>& data) {
 
   float x_vel_cmd, y_vel_cmd;
   float filter(0.1);
-  // if(data.controlParameters->use_rc){
-  //   const rc_control_settings* rc_cmd = data._desiredStateCommand->rcCommand;
-  //   data.userParameters->cmpc_gait = rc_cmd->variable[0];
-  //   _yaw_turn_rate = -rc_cmd->omega_des[2];
-  //   x_vel_cmd = rc_cmd->v_des[0];
-  //   y_vel_cmd = rc_cmd->v_des[1] * 0.5;
-  //   _body_height += rc_cmd->height_variation * 0.08;
-  // }else{
-  // _yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0];
-  // x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1];
-  // y_vel_cmd = data._desiredStateCommand->leftAnalogStick[0];
-  _yaw_turn_rate = 0.0;  // TODO
-  x_vel_cmd = 0.0;       // TODO
-  y_vel_cmd = 0.0;       // TODO
-  // }
+  
+  _yaw_turn_rate = 0.0;  
+  x_vel_cmd = 0.0;       
+  y_vel_cmd = 0.0;       
   _x_vel_des = _x_vel_des * (1 - filter) + x_vel_cmd * filter;
   _y_vel_des = _y_vel_des * (1 - filter) + y_vel_cmd * filter;
-  height_des << 0, 0, 0.24 - foot_clearance;
+  height_des << 0, 0, 0.26 - foot_clearance;
   _yaw_des = data._stateEstimator->getResult().rpy[2] + dt * _yaw_turn_rate;
   _roll_des = 0.;
   _pitch_des = 0.;
@@ -71,21 +60,10 @@ void Locomotion::run(ControlFSMData<float>& data) {
   
   // Command Setup
   _SetupCommand(data);
-  gaitNumber = data.userParameters->cmpc_gait;
+  // gaitNumber = data.userParameters->cmpc_gait;
 
   auto& seResult = data._stateEstimator->getResult();
 
-  // Check if transition to standing
-  if (((gaitNumber == 4) && current_gait != 4) || firstRun) {
-    stand_traj[0] = seResult.position[0];
-    stand_traj[1] = seResult.position[1];
-    stand_traj[2] = 0.21;
-    stand_traj[3] = 0;
-    stand_traj[4] = 0;
-    stand_traj[5] = seResult.rpy[2];
-    world_position_desired[0] = stand_traj[0];
-    world_position_desired[1] = stand_traj[1];
-  }
   if (_body_height < 0.02) {
     _body_height = 0.29;
   }
@@ -172,7 +150,7 @@ void Locomotion::run(ControlFSMData<float>& data) {
     foot_target_positions[1] = hip_horizontal_velocity[1] * .5 * stance_time -
                     .03f * (v_des_world[1] - hip_horizontal_velocity[1]) -
                     height_des(1) + hip_offset(1);
-    foot_target_positions[2] = height_des(2);
+    foot_target_positions[2] = -height_des(2);
     // cout << i << " foot : target_positions" << foot_target_positions.transpose() << endl;
     footSwingTrajectories[i].setFinalPosition(foot_target_positions);
   }
@@ -272,15 +250,16 @@ void Locomotion::run(ControlFSMData<float>& data) {
       Vec3<float> qDes = getJointAngleFromFootPosition(
           pDesFootWorld - (data._quadruped->getHipOffsets(foot)),
           data._quadruped->getSideSign(foot));
-      if (foot == 0 || foot == 3) {
+      if (foot == 2) {
         cout << foot << " foot pDes : " << pDesFootWorld.transpose() << endl;
         cout << foot << " foot qDes : " << qDes.transpose() << endl;
-        cout << "---------------------------------------------------" << endl;
       }
+      Vec3<float> zero(0.0, 0.0, 0.0);
       data._legController->commands[foot].qDes = qDes;
       data._legController->commands[foot].kpJoint = Kp;
       data._legController->commands[foot].kdJoint = Kd;
-      
+      data._legController->commands[foot].forceFeedForward = zero;
+
       // }
     } else  // foot is in stance
     {
@@ -288,21 +267,20 @@ void Locomotion::run(ControlFSMData<float>& data) {
 
       // Vec3<float> pDesFootWorld = footSwingTrajectories[foot].getPosition();
       // Vec3<float> vDesFootWorld = footSwingTrajectories[foot].getVelocity();
-      // Vec3<float> pDesLeg =
-      //     seResult.rBody * (pDesFootWorld - seResult.position) -
-      //     data._quadruped->getHipLocation(foot);
-      // Vec3<float> vDesLeg = seResult.rBody * (vDesFootWorld - seResult.vWorld);
       // cout << "Foot " << foot
       //      << " relative velocity desired: " << vDesLeg.transpose() << "\n";
       Vec3<float> forceDesLeg(fOpt[foot * 3], fOpt[foot * 3 + 1],
                               fOpt[foot * 3 + 2]);
+      if (foot == 2) {
+        cout << foot << " foot force : " << forceDesLeg.transpose() << endl;
+      }
       data._legController->commands[foot].kpJoint = Kp_stance;
       data._legController->commands[foot].kdJoint = Kd_stance;
+      data._legController->commands[foot].forceFeedForward = forceDesLeg;
       // cout << foot  <<" foot force : " << forceDesLeg.transpose() << endl;
-      // cout << "---------------------------------------------------"<< endl;
+
       // data._legController->commands[foot].kpCartesian = Kp_stance;
       // data._legController->commands[foot].kdCartesian = Kd_stance;
-      // data._legController->commands[foot].forceFeedForward = f_ff[foot];
 
       se_contactState[foot] = contactState;
     }

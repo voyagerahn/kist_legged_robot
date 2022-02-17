@@ -38,15 +38,6 @@ class FSM_State_BalanceWalking : public FSM_State<T> {
   // Parses contact specific controls to the leg controller
   void BalanceStandStep();
   bool locomotionSafe();
-
-//   WBC_Ctrl<T> * _wbc_ctrl;
-//   LocomotionCtrlData<T> * _wbc_data;
-
-//   T last_height_command = 0;
-
-//   Vec3<T> _ini_body_pos;
-//   Vec3<T> _ini_body_ori_rpy;
-//   T _body_weight;
 };
 
 #endif  // FSM_STATE_BALANCESTAND_H
