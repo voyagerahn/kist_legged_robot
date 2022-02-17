@@ -23,7 +23,7 @@ class Locomotion {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  Locomotion(float _dt, int _iterations_between_mpc, KIST_UserParameters* parameters);
+  Locomotion(float _dt,KIST_UserParameters* parameters);
   void initialize();
 
   template<typename T>
@@ -88,23 +88,12 @@ public:
   float _body_height_running = 0.29;
   float _body_height_jumping = 0.36;
 
-  void recompute_timing(int iterations_per_mpc);
-  void updateMPCIfNeeded(int* mpcTable, ControlFSMData<float>& data, bool omniMode);
-  void solveDenseMPC(int *mpcTable, ControlFSMData<float> &data);
-  void solveSparseMPC(int *mpcTable, ControlFSMData<float> &data);
-  void initSparseMPC();
   Vec3<float> getJointAngleFromFootPosition(Vec3<float> pDes, int leg);
-  int iterationsBetweenMPC;
-  int horizonLength;
-  int default_iterations_between_mpc;
   float dt;
-  float dtMPC;
   int iterationCounter = 0;
   Vec3<float> f_ff[4];
   Vec4<float> swingTimes;
   FootSwingTrajectory<float> footSwingTrajectories[4];
-  OffsetDurationGait trotting, bounding, pronking, jumping, galloping, standing, trotRunning, walking, walking2, pacing;
-  MixedFrequncyGait random, random2;
   Mat3<float> Kp, Kd, Kp_stance, Kd_stance;
   bool firstRun = true;
   bool firstSwing[4];
@@ -124,9 +113,7 @@ public:
   KIST_UserParameters* _parameters = nullptr;
 //   CMPC_Jump jump_state;
 
-  vectorAligned<Vec12<double>> _sparseTrajectory;
 
-  SparseCMPC _sparseCMPC;
 
 };
 

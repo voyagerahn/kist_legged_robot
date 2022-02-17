@@ -102,20 +102,18 @@ class Quadruped {
                  0);
     return pHip;
   }
-
-  // /*!
-  //  * Get location of the foot for the given leg in robot frame
-  //  */
-  // Vec3<T> get_Foot_Positions_In_Base_Frame(Quadruped<T>& quad, Vec3<float> jointAngle, int leg,
-  //                                          Vec3<float> jointAngles) {
-  //   Vec3<T> hip_offset(getHipLocation(0),getHipLocation(1),getHipLocation(2));
-  //   Vec3<T> foot_positions = get_Foot_Position_In_Hip_Frame(quad, jointAngle, leg);
-  //   return foot_positions + hip_offset;
-  // }
+    Vec3<T> getHipOffsets(int leg) {
+    assert(leg >= 0 && leg < 4);
+    Vec3<T> COM_offset(0.012731,0.002186,0.000515);
+    Vec3<T> pHip((leg == 0 || leg == 1) ? 0.183 : -0.183,
+                 (leg == 1 || leg == 3) ? 0.047 : -0.047,  
+                 0);
+    return (pHip-COM_offset);
+  }
   /*!
    * Get location of the foot for the given leg in hip frame
    */
-  Vec3<T> get_Foot_Position_In_Hip_Frame(Quadruped<T>& quad, Vec3<float> jointAngle, int leg) {
+  Vec3<T> getFootPositionInHipFrame(Quadruped<T>& quad, Vec3<float> jointAngle, int leg) {
     T l_hip = quad._hipLinkLength;
     T l_knee = quad._kneeLinkLength;
     T l_abad = quad._abadLinkLength * quad.getSideSign(leg);
