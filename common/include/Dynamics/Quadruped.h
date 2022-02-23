@@ -102,13 +102,12 @@ class Quadruped {
                  0);
     return pHip;
   }
-    Vec3<T> getHipOffsets(int leg) {
+  Vec3<T> getHipOffsets(int leg) {
     assert(leg >= 0 && leg < 4);
-    Vec3<T> COM_offset(0.012731,0.002186,0.000515);
+    Vec3<T> COM_offset(0.012731, 0.002186, 0.000515);
     Vec3<T> pHip((leg == 0 || leg == 1) ? 0.183 : -0.183,
-                 (leg == 1 || leg == 3) ? 0.047 : -0.047,  
-                 0);
-    return (pHip-COM_offset);
+                 (leg == 1 || leg == 3) ? 0.047 : -0.047, 0);
+    return (pHip - COM_offset);
   }
   /*!
    * Get location of the foot for the given leg in hip frame

@@ -36,5 +36,32 @@ void FootSwingTrajectory<T>::computeSwingTrajectoryBezier(T phase, T swingTime) 
   _a[2] = za;
 }
 
+template <typename T>
+void FootSwingTrajectory<T>::genSwingFootTrajectory(T input_phase) {
+  T phase = input_phase;
+
+  if (input_phase < T(0.5)) {
+    phase = 0.8 * std::sin(input_phase * M_PI);
+  } else {
+    phase = 0.8 + (input_phase - 0.5) * 0.4;
+  }
+  T mid = std::max(_pf[2], _p0[2]) + 0.1;  // max_clearance = 0.1
+  _p[0] = (1 - phase) * _p0[0] + phase * _pf[0];
+  _p[1] = (1 - phase) * _p0[1] + phase * _pf[1];
+  _p[2] = genParabola(phase, _p0[2], mid, _pf[2]);
+}
+
+template <typename T>
+float FootSwingTrajectory<T>::genParabola(T phase, T start, T mid, T end) {
+float mid_phase = 0.5;
+float delta_1 = mid-start;
+float delta_2 = end-start;
+float delta_3 = mid_phase*mid_phase-mid_phase;
+float coef_a = (delta_1-delta_2*mid_phase)/delta_3;
+float coef_b = (delta_2*mid_phase*mid_phase-delta_1)/delta_3;
+float coef_c = start;
+return coef_a * phase * phase + coef_b * phase + coef_c;
+}
+
 template class FootSwingTrajectory<double>;
 template class FootSwingTrajectory<float>;

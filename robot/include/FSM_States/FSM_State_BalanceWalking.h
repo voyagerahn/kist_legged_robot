@@ -35,6 +35,10 @@ class FSM_State_BalanceWalking : public FSM_State<T> {
   // Keep track of the control iterations
   int _iter = 0;
   Locomotion* cLocomotion;
+  DVec<T> _ini_jpos;
+  Vec3<T> qDes;
+  Vec3<T> qdDes;
+
   // Parses contact specific controls to the leg controller
   void BalanceStandStep();
   bool locomotionSafe();

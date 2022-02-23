@@ -68,7 +68,7 @@ class LegController {
   void updateData(const LowState* state);
   void updateCommand(LowCmd* cmd);
   void setEnabled(bool enabled) { _legsEnabled = enabled; };
-  float torque_limit = 8.5;
+  float torque_limit = 10;
 
   /*!
    * Set the maximum torque.  This only works on cheetah 3!

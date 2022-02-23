@@ -5,6 +5,7 @@
  */
 
 #include "FSM_States/FSM_State_BalanceWalking.h"
+
 #include "../Controller/WBC_Ctrl/LocomotionCtrl/LocomotionCtrl.hpp"
 
 /**
@@ -17,10 +18,12 @@ template <typename T>
 FSM_State_BalanceWalking<T>::FSM_State_BalanceWalking(
     ControlFSMData<T>* _controlFSMData)
     : FSM_State<T>(_controlFSMData, FSM_StateName::BALANCE_WALKING,
-                   "BALANCE_WALKING") {
-  cLocomotion = new Locomotion(
-      _controlFSMData->controlParameters->controller_dt,
-      _controlFSMData->userParameters);
+                   "BALANCE_WALKING"),_ini_jpos(a1::num_act_joint) {
+  cLocomotion =
+      new Locomotion(_controlFSMData->controlParameters->controller_dt,
+                     _controlFSMData->userParameters);
+  qDes << 0, 0.87, -1.48;
+  qdDes << 0, 0, 0;
   // Set the pre controls safety checks
   this->turnOnAllSafetyChecks();
   // Turn off Foot pos command since it is set in WBC as operational task
@@ -32,7 +35,7 @@ FSM_State_BalanceWalking<T>::FSM_State_BalanceWalking(
 
 template <typename T>
 void FSM_State_BalanceWalking<T>::onEnter() {
-   // Default is to not transition
+  // Default is to not transition
   this->nextStateName = this->stateName;
 
   this->transitionData.zero();
@@ -46,7 +49,6 @@ void FSM_State_BalanceWalking<T>::onEnter() {
  */
 template <typename T>
 void FSM_State_BalanceWalking<T>::run() {
-
   BalanceStandStep();
 }
 
@@ -116,70 +118,74 @@ FSM_StateName FSM_State_BalanceWalking<T>::checkTransition() {
  */
 template <typename T>
 TransitionData<T> FSM_State_BalanceWalking<T>::transition() {
-//   // Switch FSM control mode
-//   switch (this->nextStateName) {
-//     case FSM_StateName::LOCOMOTION:
-//       BalanceStandStep();
+  //   // Switch FSM control mode
+  //   switch (this->nextStateName) {
+  //     case FSM_StateName::LOCOMOTION:
+  //       BalanceStandStep();
 
-//       _iter++;
-//       if (_iter >= this->transitionDuration * 1000) {
-//         this->transitionData.done = true;
-//       } else {
-//         this->transitionData.done = false;
-//       }
+  //       _iter++;
+  //       if (_iter >= this->transitionDuration * 1000) {
+  //         this->transitionData.done = true;
+  //       } else {
+  //         this->transitionData.done = false;
+  //       }
 
-//       break;
+  //       break;
 
-//     case FSM_StateName::PASSIVE:
-//       this->turnOffAllSafetyChecks();
-//       this->transitionData.done = true;
-//       break;
-//     default:
-//       std::cout << "[CONTROL FSM] Something went wrong in transition"
-//                 << std::endl;
-//   }
+  //     case FSM_StateName::PASSIVE:
+  //       this->turnOffAllSafetyChecks();
+  //       this->transitionData.done = true;
+  //       break;
+  //     default:
+  //       std::cout << "[CONTROL FSM] Something went wrong in transition"
+  //                 << std::endl;
+  //   }
 
-//   // Return the transition data to the FSM
-//   return this->transitionData;
+  //   // Return the transition data to the FSM
+  //   return this->transitionData;
 }
-template<typename T>
+template <typename T>
 bool FSM_State_BalanceWalking<T>::locomotionSafe() {
   auto& seResult = this->_data->_stateEstimator->getResult();
 
   const T max_roll = 40;
   const T max_pitch = 40;
 
-  if(std::fabs(seResult.rpy[0]) > ori::deg2rad(max_roll)) {
-    printf("Unsafe locomotion: roll is %.3f degrees (max %.3f)\n", ori::rad2deg(seResult.rpy[0]), max_roll);
+  if (std::fabs(seResult.rpy[0]) > ori::deg2rad(max_roll)) {
+    printf("Unsafe locomotion: roll is %.3f degrees (max %.3f)\n",
+           ori::rad2deg(seResult.rpy[0]), max_roll);
     return false;
   }
 
-  if(std::fabs(seResult.rpy[1]) > ori::deg2rad(max_pitch)) {
-    printf("Unsafe locomotion: pitch is %.3f degrees (max %.3f)\n", ori::rad2deg(seResult.rpy[1]), max_pitch);
+  if (std::fabs(seResult.rpy[1]) > ori::deg2rad(max_pitch)) {
+    printf("Unsafe locomotion: pitch is %.3f degrees (max %.3f)\n",
+           ori::rad2deg(seResult.rpy[1]), max_pitch);
     return false;
   }
 
-  for(int leg = 0; leg < 4; leg++) {
+  for (int leg = 0; leg < 4; leg++) {
     auto p_leg = this->_data->_legController->datas[leg].p;
-    if(p_leg[2] > 0) {
-      printf("Unsafe locomotion: leg %d is above hip (%.3f m)\n", leg, p_leg[2]);
+    if (p_leg[2] > 0) {
+      printf("Unsafe locomotion: leg %d is above hip (%.3f m)\n", leg,
+             p_leg[2]);
       return false;
     }
 
-    if(std::fabs(p_leg[1] > 0.18)|| std::fabs(p_leg[1] < -0.18)) {
-      printf("Unsafe locomotion: leg %d's y-position is bad (%.3f m)\n", leg, p_leg[1]);
+    if (std::fabs(p_leg[1] > 0.18) || std::fabs(p_leg[1] < -0.18)) {
+      printf("Unsafe locomotion: leg %d's y-position is bad (%.3f m)\n", leg,
+             p_leg[1]);
       return false;
     }
 
     auto v_leg = this->_data->_legController->datas[leg].v.norm();
-    if(std::fabs(v_leg) > 9.) {
-      printf("Unsafe locomotion: leg %d is moving too quickly (%.3f m/s)\n", leg, v_leg);
+    if (std::fabs(v_leg) > 9.) {
+      printf("Unsafe locomotion: leg %d is moving too quickly (%.3f m/s)\n",
+             leg, v_leg);
       return false;
     }
   }
 
   return true;
-
 }
 /**
  * Cleans up the state information on exiting the state.
@@ -194,8 +200,34 @@ void FSM_State_BalanceWalking<T>::onExit() {
  */
 template <typename T>
 void FSM_State_BalanceWalking<T>::BalanceStandStep() {
+  if (_iter < 4000) {
+    if (_iter < 20) {
+      for (int leg = 0; leg < 4; leg++) {
+        for (int jidx = 0; jidx < 3; jidx++) {
+          _ini_jpos[3 * leg + jidx] =
+              this->_data->_legController->datas[leg].q[jidx];
+        }
+      }
+    } else {
+      static double progress(0.);
+      progress += this->_data->controlParameters->controller_dt;
+      double movement_duration(3.0);
+      double ratio = progress / movement_duration;
 
-  cLocomotion->run<T>(*this->_data);
+      if (ratio > 1.) ratio = 1.;
+
+      this->jointPDControl(0, ratio * qDes + (1. - ratio) * _ini_jpos.head(3),
+                           qdDes);
+      this->jointPDControl(
+          1, ratio * qDes + (1. - ratio) * _ini_jpos.segment(3, 3), qdDes);
+      this->jointPDControl(
+          2, ratio * qDes + (1. - ratio) * _ini_jpos.segment(6, 3), qdDes);
+      this->jointPDControl(
+          3, ratio * qDes + (1. - ratio) * _ini_jpos.segment(9, 3), qdDes);
+    }
+  } else {
+    cLocomotion->run<T>(*this->_data);
+  }
 }
 
 // template class FSM_State_BalanceWalking<double>;

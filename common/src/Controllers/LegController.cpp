@@ -144,9 +144,10 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // Torque
     
     legTorque = datas[leg].J.transpose() * footForce;
-    // if (leg == 3) {
-    //   cout << leg << "  leg before torque :  " << legTorque.transpose() << endl;
-    // }
+    if (leg == 0||leg == 3) {
+      cout << leg << "  leg before torque :  " << legTorque.transpose() << endl;
+      cout << "-------------------------------------------------------" << endl;
+    }
     legTorque += commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
                 commands[leg].kdJoint * (commands[leg].qdDes -
                 datas[leg].qd);
@@ -159,10 +160,10 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     //        << endl;
     //   cout << "torque :  " << legTorque.transpose() << endl;
     // }
-    if (leg == 2) {
-      cout << leg << "  leg torque :  " << legTorque.transpose() << endl;
-      cout << "---------------------------------------------------" << endl;
-    }
+    // if (leg == 2) {
+    //   cout << leg << "  leg torque :  " << legTorque.transpose() << endl;
+    //   cout << "---------------------------------------------------" << endl;
+    // }
 
     legTorque(0) = (legTorque(0) > torque_limit) ? torque_limit : legTorque(0);
     legTorque(1) = (legTorque(1) > torque_limit) ? torque_limit : legTorque(1);
@@ -180,21 +181,21 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     cmd->motorCmd[3 * leg + 2].tau = legTorque(2);
   }
 
-  cmd->motorCmd[0].tau = 0.0;
-  cmd->motorCmd[1].tau = 0.0;
-  cmd->motorCmd[2].tau = 0.0;
+  // cmd->motorCmd[0].tau = 0.0;
+  // cmd->motorCmd[1].tau = 0.0;
+  // cmd->motorCmd[2].tau = 0.0;
 
-  cmd->motorCmd[3].tau = 0.0;
-  cmd->motorCmd[4].tau = 0.0;
-  cmd->motorCmd[5].tau = 0.0;
+  // cmd->motorCmd[3].tau = 0.0;
+  // cmd->motorCmd[4].tau = 0.0;
+  // cmd->motorCmd[5].tau = 0.0;
 
   // cmd->motorCmd[6].tau = 0.0;
   // cmd->motorCmd[7].tau = 0.0;
   // cmd->motorCmd[8].tau = 0.0;
 
-  cmd->motorCmd[9].tau = 0.0;
-  cmd->motorCmd[10].tau = 0.0;
-  cmd->motorCmd[11].tau = 0.0;
+  // cmd->motorCmd[9].tau = 0.0;
+  // cmd->motorCmd[10].tau = 0.0;
+  // cmd->motorCmd[11].tau = 0.0;
 
   // // estimate torque
   // datas[leg].tauEstimate =

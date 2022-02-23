@@ -47,6 +47,7 @@ public:
   Vec3<float> hip_offset;
   Vec3<float> twisting_vector;
   Vec3<float> hip_horizontal_velocity;
+  Vec3<float> zero;
   float foot_clearance = 0.01; //The foot clearance on the ground at the end of the swing cycle
   Vec3<float> Fr_des[4];
 
@@ -89,6 +90,7 @@ public:
   float _body_height_jumping = 0.36;
 
   Vec3<float> getJointAngleFromFootPosition(Vec3<float> pDes, int leg);
+ 
   float dt;
   int iterationCounter = 0;
   Vec3<float> f_ff[4];

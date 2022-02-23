@@ -25,11 +25,14 @@ Locomotion::Locomotion(float _dt, KIST_UserParameters* parameters) : dt(_dt) {
   rpy_int[0] = 0;
   rpy_int[1] = 0;
   rpy_int[2] = 0;
-
+  zero << 0.0, 0.0, 0.0;
   for (int i = 0; i < 4; i++) firstSwing[i] = true;
   pBody_des.setZero();
   vBody_des.setZero();
   aBody_des.setZero();
+  balanceController.set_alpha_control(0.01);
+  balanceController.set_friction(0.5);
+  balanceController.set_mass(12.0);
 }
 
 void Locomotion::initialize() {
@@ -56,7 +59,6 @@ void Locomotion::_SetupCommand(ControlFSMData<float>& data) {
 
 template <>
 void Locomotion::run(ControlFSMData<float>& data) {
-  // bool omniMode = false;
   
   // Command Setup
   _SetupCommand(data);
@@ -72,28 +74,17 @@ void Locomotion::run(ControlFSMData<float>& data) {
   Vec3<float> v_des_robot(_x_vel_des, _y_vel_des, 0);
   Vec3<float> v_robot = seResult.vWorld;
 
-  // Integral-esque pitche and roll compensation
-  if (fabs(v_robot[0]) > .2)  // avoid dividing by zero
-  {
-    rpy_int[1] += dt * (_pitch_des - seResult.rpy[1]) / v_robot[0];
-  }
-  if (fabs(v_robot[1]) > 0.1) {
-    rpy_int[0] += dt * (_roll_des - seResult.rpy[0]) / v_robot[1];
-  }
-
-  rpy_int[0] = fminf(fmaxf(rpy_int[0], -.25), .25);  //-0.25~0.25
-  rpy_int[1] = fminf(fmaxf(rpy_int[1], -.25), .25);
-  rpy_comp[1] = v_robot[0] * rpy_int[1];  // compensation
-  rpy_comp[0] =
-      v_robot[1] * rpy_int[0] * (gaitNumber != 8);  // turn off for pronking
-
   // get the foot end position (world coordinate system) in base frame
   // Body coordinates + Body rotation matrix^T*(side swing coordinates + Foot
   // base coordinates)
-  for (int i = 0; i < 4; i++) {
-    pFoot[i] = data._quadruped->getFootPositionInHipFrame(
-                   **&data._quadruped, data._legController->datas[i].q, i) +
-               data._quadruped->getHipOffsets(i);
+  for (int foot = 0; foot < 4; foot++) {
+    pFoot[foot] = data._quadruped->getFootPositionInHipFrame(
+                   **&data._quadruped, data._legController->datas[foot].q, foot) +
+               data._quadruped->getHipOffsets(foot);
+  if (firstSwing[foot]) {
+    firstSwing[foot] = false;
+    footSwingTrajectories[foot].setInitialPosition(pFoot[foot]);
+  }
   }
 
   // some first time initialization
@@ -110,31 +101,25 @@ void Locomotion::run(ControlFSMData<float>& data) {
     firstRun = false;
   }
 
-  // foot placement
+  // set swing time
   for (int l = 0; l < 4; l++) {
     swingTimes[l] = data._gaitScheduler->gaitData.phaseSwing(l);
   }
   float side_sign[4] = {-1, 1, -1, 1};
-  float interleave_y[4] = {-0.08, 0.08, 0.02, -0.02};
-  float interleave_gain = -0.2; //-0.13
-  float v_abs = std::fabs(v_des_robot[0]);   // float v_abs = std::fabs(seResult.vBody[0]);
+
+  // set target foot positions
   for (int i = 0; i < 4; i++) {
-    if (firstSwing[i]) {
-      swingTimeRemaining[i] = swingTimes[i];
-    } else {
-      swingTimeRemaining[i] -= dt;
-    }
+
     // get hip position in base frame
     hip_offset = data._quadruped->getHipLocation(i);
     twisting_vector << -hip_offset(1), hip_offset(0), 0;
-    hip_horizontal_velocity =
-        seResult.vBody + seResult.rpy(2) * twisting_vector;
 
-    //   v_des_robot = seResult.vBody;//+seResult.rpy(2);
-    
+    // Vec3<float> com_vel(-0.36,-0.014,0);
+    hip_horizontal_velocity = 
+        seResult.vBody + seResult.omegaBody(2) * twisting_vector;
+    //com_vel+seResult.omegaBody(2)*twisting_vector;    
     v_des_world =
         v_des_robot;// + seResult.rBody.transpose() * twisting_vector;
-
     footSwingTrajectories[i].setHeight(.06);
     Vec3<float> offset(0, side_sign[i] * .065, 0);
 
@@ -158,18 +143,19 @@ void Locomotion::run(ControlFSMData<float>& data) {
   // calc gait
   iterationCounter++;
 
-//   // load LCM leg swing gains
+  // gains
   Kp << 25, 0, 0, 0, 25, 0, 0, 0, 25;
   Kp_stance = 0 * Kp;
 
   Kd << 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5;
   Kd_stance = 0* Kd;
+  
   // gait
-  Vec4<float> contactStates = data._gaitScheduler->gaitData.phaseStance; //gait->getContactState();
-  Vec4<float> swingStates = data._gaitScheduler->gaitData.phaseSwing;//gait->getSwingState();
+  Vec4<float> contactStates = data._gaitScheduler->gaitData.phaseStance; 
+  Vec4<float> swingStates = data._gaitScheduler->gaitData.phaseSwing;
   Vec4<float> se_contactState(0, 0, 0, 0);
 
-  // custom balance
+  // QP
   for (int i = 0; i < 4; i++) {
     contactStateScheduled[i] = contactStates[i] > 0 ? 1 : 0;
   }
@@ -215,9 +201,7 @@ void Locomotion::run(ControlFSMData<float>& data) {
     pFeet[leg * 3 + 1] = (double)pFeetVecCOM[1];
     pFeet[leg * 3 + 2] = (double)pFeetVecCOM[2];
   }
-  balanceController.set_alpha_control(0.01);
-  balanceController.set_friction(0.5);
-  balanceController.set_mass(12.0);
+
   balanceController.set_wrench_weights(COM_weights_stance, Base_weights_stance);
   balanceController.set_PDgains(kpCOM, kdCOM, kpBase, kdBase);
   balanceController.set_desiredTrajectoryData(rpy, p_des, omegaDes, v_des);
@@ -236,25 +220,30 @@ void Locomotion::run(ControlFSMData<float>& data) {
    
     if (swingState > 0)  // foot is in swing
     {
-      if (firstSwing[foot]) {
-        firstSwing[foot] = false;
-        footSwingTrajectories[foot].setInitialPosition(pFoot[foot]);
-      }
+      // if (firstSwing[foot]) {
+      //   firstSwing[foot] = false;
+      //   footSwingTrajectories[foot].setInitialPosition(pFoot[foot]);
+      //   if (foot == 2) {
+      //     cout << pFoot[foot].transpose() << endl;
+      //   }
+      // }
 
       footSwingTrajectories[foot].computeSwingTrajectoryBezier(
           swingState, swingTimes[foot]);
+      // footSwingTrajectories[foot].genSwingFootTrajectory(swingState);
 
       Vec3<float> pDesFootWorld = footSwingTrajectories[foot].getPosition();
     //   Vec3<float> vDesFootWorld = footSwingTrajectories[foot].getVelocity();
-
       Vec3<float> qDes = getJointAngleFromFootPosition(
           pDesFootWorld - (data._quadruped->getHipOffsets(foot)),
           data._quadruped->getSideSign(foot));
-      if (foot == 2) {
-        cout << foot << " foot pDes : " << pDesFootWorld.transpose() << endl;
-        cout << foot << " foot qDes : " << qDes.transpose() << endl;
-      }
-      Vec3<float> zero(0.0, 0.0, 0.0);
+      // if (foot == 2) {
+      // //   // cout << foot << " foot target : " << foot_target_positions.transpose() << endl;
+      //   cout << pDesFootWorld.transpose() << endl;
+      // //   // cout << foot << " foot qDes : " << qDes.transpose() << endl;
+      // //   // cout << foot << " foot pDes : " << pDesFootWorld.transpose() << endl;
+      // //   // cout << foot << " foot qDes : " << qDes.transpose() << endl;
+      // }
       data._legController->commands[foot].qDes = qDes;
       data._legController->commands[foot].kpJoint = Kp;
       data._legController->commands[foot].kdJoint = Kd;
@@ -271,9 +260,9 @@ void Locomotion::run(ControlFSMData<float>& data) {
       //      << " relative velocity desired: " << vDesLeg.transpose() << "\n";
       Vec3<float> forceDesLeg(fOpt[foot * 3], fOpt[foot * 3 + 1],
                               fOpt[foot * 3 + 2]);
-      if (foot == 2) {
-        cout << foot << " foot force : " << forceDesLeg.transpose() << endl;
-      }
+      // if (foot == 0||foot == 3) {
+      //   cout << foot << " foot force : " << forceDesLeg.transpose() << endl;
+      // }
       data._legController->commands[foot].kpJoint = Kp_stance;
       data._legController->commands[foot].kdJoint = Kd_stance;
       data._legController->commands[foot].forceFeedForward = forceDesLeg;
@@ -299,7 +288,7 @@ void Locomotion::run(ControlFSMData<double>& data) {
   printf("call to old CMPC with double!\n");
 }
 
-//get joint angle from foot position in hip frame
+// get joint angle from foot position in hip frame
 Vec3<float> Locomotion::getJointAngleFromFootPosition(
     Vec3<float> pDes, int sideSign) {
   // position of foot relative to hip
@@ -324,3 +313,6 @@ Vec3<float> Locomotion::getJointAngleFromFootPosition(
 
   return q;
 }
+
+
+

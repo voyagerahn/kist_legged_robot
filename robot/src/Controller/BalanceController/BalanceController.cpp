@@ -160,18 +160,6 @@ BalanceController::BalanceController()
   qp_not_init = 1.0;
 }
 
-/*
-void BalanceController::set_base_support_flag(double sflag)
-{
-   double support_flag[] = {sflag};
-   command.command_number = 4;
-   command.data_size = sizeof(support_flag) / sizeof(double);
-   command.data.resize(command.data_size);
-   memcpy(command.data.data(), support_flag, sizeof(support_flag) );
-   lcm.publish("cheetah:sim_command", &command);
-}
-*/
-
 /* --------------- Primary Interface ------------------- */
 
 void BalanceController::updateProblemData(double* xfb_in, double* p_feet_in,
@@ -300,9 +288,9 @@ void BalanceController::solveQP_nonThreaded(double* xOpt) {
 
   b_control_Opt = A_control * xOpt_eigen;
 
-  for (int i = 0; i < 6; i++) {
+  // for (int i = 0; i < 6; i++) {
     // qp_controller_data.b_control_Opt[i] = b_control_Opt(i);
-  }
+  // }
 
   xOptPrev = xOpt_eigen;
 
