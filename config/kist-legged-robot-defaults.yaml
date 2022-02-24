@@ -19,7 +19,7 @@ foot_sensor_noise_position    :  0.001
 foot_sensor_noise_velocity    :  0.1
 imu_process_noise_position    :  0.02
 imu_process_noise_velocity    :  0.02
-kpCOM: [120,120,300]
+kpCOM: [120,120,380]
 kdCOM: [1.8,1.8,2.3]
 kpBase: [20,20,20] #300,200,100
 kdBase: [0.2,0.2,0.2] #20,10,10

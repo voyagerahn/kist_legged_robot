@@ -41,7 +41,7 @@ void Locomotion::initialize() {
 }
 
 void Locomotion::_SetupCommand(ControlFSMData<float>& data) {
-  _body_height = 0.29;
+  _body_height = 0.4;
 
   float x_vel_cmd, y_vel_cmd;
   float filter(0.1);
@@ -193,13 +193,17 @@ void Locomotion::run(ControlFSMData<float>& data) {
     computeLegJacobianAndPosition(**&data._quadruped,
                                   data._legController->datas[leg].q,
                                   (Mat3<float>*)nullptr, &pFeetVec, 1);
-    pFeetVecCOM =
-        seResult.rBody.transpose() * (data._quadruped->getHipLocation(leg) +
-                                      data._legController->datas[leg].p);
-
-    pFeet[leg * 3] = (double)pFeetVecCOM[0];
-    pFeet[leg * 3 + 1] = (double)pFeetVecCOM[1];
-    pFeet[leg * 3 + 2] = (double)pFeetVecCOM[2];
+    // pFeetVecCOM =
+    //     seResult.rBody.transpose() * (data._quadruped->getHipLocation(leg) +
+    //                                   data._legController->datas[leg].p);
+    // pFoot[leg] =
+    //     data._quadruped->getFootPositionInHipFrame(
+    //         **&data._quadruped, data._legController->datas[leg].q, leg) +
+    //     data._quadruped->getHipOffsets(leg);
+    
+    pFeet[leg * 3] = (double)pFoot[leg][0];
+    pFeet[leg * 3 + 1] = (double)pFoot[leg][1];
+    pFeet[leg * 3 + 2] = (double)pFoot[leg][2];
   }
 
   balanceController.set_wrench_weights(COM_weights_stance, Base_weights_stance);

@@ -144,10 +144,10 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // Torque
     
     legTorque = datas[leg].J.transpose() * footForce;
-    if (leg == 0||leg == 3) {
-      cout << leg << "  leg before torque :  " << legTorque.transpose() << endl;
-      cout << "-------------------------------------------------------" << endl;
-    }
+    // if (leg == 0||leg == 3) {
+    //   cout << leg << "  leg before torque :  " << legTorque.transpose() << endl;
+    //   cout << "-------------------------------------------------------" << endl;
+    // }
     legTorque += commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
                 commands[leg].kdJoint * (commands[leg].qdDes -
                 datas[leg].qd);
