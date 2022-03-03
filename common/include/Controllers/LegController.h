@@ -46,7 +46,7 @@ struct LegControllerData {
 
   void zero();
 
-  Vec3<T> q, qd, p, v;
+  Vec3<T> q, qd, p, v, com, com_vel, pfeet;
   Mat3<T> J;
   Vec3<T> tauEstimate;
   Quadruped<T>* quadruped;
@@ -68,7 +68,7 @@ class LegController {
   void updateData(const LowState* state);
   void updateCommand(LowCmd* cmd);
   void setEnabled(bool enabled) { _legsEnabled = enabled; };
-  float torque_limit = 10;
+  float torque_limit = 11;
 
   /*!
    * Set the maximum torque.  This only works on cheetah 3!

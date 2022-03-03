@@ -4,6 +4,9 @@
 #include "KIST_UserParameters.h"
 #include "RobotRunner.h"
 #include "loop.h"
+// #include <fstream>
+
+// #define data 2
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -13,7 +16,7 @@ int main(void) {
   RobotControlParameters _robotParams;
   ControlParameters* _userControlParameters = nullptr;
   _userControlParameters = ctrl.getUserControlParameters();
-
+  // string fileName[data] = {"com.txt", "position.txt"};
   // Load parameters from file
   printf("Loading parameters from file...\n");
   try {
@@ -43,6 +46,10 @@ int main(void) {
   RobotRunner _robotRunner(LOWLEVEL, &ctrl);
   _robotRunner.controlParameters = &_robotParams;
   _robotRunner.Initialize();
+  
+  // ofstream file[data];
+  // int LengthOfFile = sizeof(file) / sizeof(*file); //2
+
   LoopFunc loop_torque_control("torque control", _robotRunner.dt,
                                boost::bind(&RobotRunner::Run, &_robotRunner));
   LoopFunc loop_udpSend("udp_send", _robotRunner.dt, 3,
@@ -52,11 +59,17 @@ int main(void) {
   loop_udpSend.start();
   loop_udpRecv.start();
   loop_torque_control.start();
-
-  // ofstream file[data];
-  // int LengthOfFile = sizeof(file) / sizeof(*file); //60
+  
   if (cin.get() == '\n') {
-    // delete _robotRunner;
+    // for (int i = 0; i < LengthOfFile; i++) {
+    //   fileName[i] = "../../data/" + fileName[i];
+    //   file[i].open(fileName[i]);
+    // }
+    // for (int i = 0; i < LengthOfFile; i++) {
+    //   for (int j = 0; j < _robotRunner.motiontime; j++)
+    //     file[i] << j * _robotRunner.dt << " " << data[i][j] << endl;
+    // }
+  
     cout << "-------------PROGRAM FINISHED-------------" << endl;
 
     return 0;

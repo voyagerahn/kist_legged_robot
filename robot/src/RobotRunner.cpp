@@ -59,7 +59,6 @@ void RobotRunner::Run() {
   // start = clock();
   _stateEstimator->run();
 
-  // setupStep();
   udp.GetRecv(state);
   _legController->updateData(&state);
   // _time = (float)motiontime * dt;
@@ -73,7 +72,6 @@ void RobotRunner::Run() {
   motiontime++;
   // end = clock();
   // result = (double)(end-start)/CLOCKS_PER_SEC;
-  // finalizeStep();
 }
 
 void RobotRunner::setupStep() {

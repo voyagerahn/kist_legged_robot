@@ -128,8 +128,8 @@ bool SafetyChecker<T>::checkForceFeedForward() {
   T maxVerticalForce = 0;
 
   // Maximum force limits for each robot
-  maxLateralForce = 350;
-  maxVerticalForce = 350;
+  maxLateralForce = 200;
+  maxVerticalForce = 200;
 
   // Check all of the legs
   for (int leg = 0; leg < 4; leg++) {

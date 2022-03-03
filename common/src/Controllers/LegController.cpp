@@ -35,6 +35,8 @@ template <typename T>
 void LegControllerData<T>::zero() {
   q = Vec3<T>::Zero();
   qd = Vec3<T>::Zero();
+  com = Vec3<T>::Zero();
+  com_vel = Vec3<T>::Zero();
   p = Vec3<T>::Zero();
   v = Vec3<T>::Zero();
   J = Mat3<T>::Zero();
@@ -72,6 +74,7 @@ template <typename T>
 void LegController<T>::updateData(const LowState* state) {
   for (int leg = 0; leg < 4; leg++) {
     for (int joint = 0; joint < 3; joint++) {
+      // Vec3<T> tmp(0.0,0.87,-1.48);
       datas[leg].q(joint) = state->motorState[3 * leg + joint].q;
       datas[leg].qd(joint) = state->motorState[3 * leg + joint].dq;
       // datas[leg]                 .tauEstimate(joint) =
@@ -80,43 +83,61 @@ void LegController<T>::updateData(const LowState* state) {
     // J and p
     computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q, &(datas[leg].J),
                                      &(datas[leg].p), leg);
-    // datas[leg].v = datas[leg].J * datas[leg].qd;
+    datas[leg].v = datas[leg].J * datas[leg].qd;
   }
 
-  _q << 0, 0, 0, state->imu.quaternion[1], state->imu.quaternion[2],
-      state->imu.quaternion[3], datas[1].q(0), datas[1].q(1), datas[1].q(2),
-      datas[0].q(0), datas[0].q(1), datas[0].q(2), datas[3].q(0), datas[3].q(1),
-      datas[3].q(2), datas[2].q(0), datas[2].q(1), datas[2].q(2),
-      state->imu.quaternion[0];
+  // _q << 0, 0, 0, state->imu.quaternion[1], state->imu.quaternion[2],
+  //     state->imu.quaternion[3], datas[1].q(0), datas[1].q(1), datas[1].q(2),
+  //     datas[0].q(0), datas[0].q(1), datas[0].q(2), datas[3].q(0), datas[3].q(1),
+  //     datas[3].q(2), datas[2].q(0), datas[2].q(1), datas[2].q(2),
+  //     state->imu.quaternion[0];
 
-  _dq << 0, 0, 0, state->imu.quaternion[1], state->imu.quaternion[2],
-      state->imu.quaternion[3], datas[1].q(0), datas[1].qd(1), datas[1].qd(2),
-      datas[0].qd(0), datas[0].qd(1), datas[0].qd(2), datas[3].qd(0),
-      datas[3].qd(1), datas[3].qd(2), datas[2].qd(0), datas[2].qd(1),
-      datas[2].qd(2);
-  m.update_kinematics(_q, _dq);
-  m.update_dynamics();
-  m.calculate_EE_Jacobians();
-  m.calculate_foot_Jacobians();
-  m.calculate_EE_positions_orientations();
+  // _dq << 0, 0, 0, state->imu.quaternion[1], state->imu.quaternion[2],
+  //     state->imu.quaternion[3], datas[1].q(0), datas[1].qd(1), datas[1].qd(2),
+  //     datas[0].qd(0), datas[0].qd(1), datas[0].qd(2), datas[3].qd(0),
+  //     datas[3].qd(1), datas[3].qd(2), datas[2].qd(0), datas[2].qd(1),
+  //     datas[2].qd(2);
+  // m.update_kinematics(_q, _dq);
+  // m.update_dynamics();
+  // m.calculate_EE_Jacobians();
+  // m.calculate_foot_Jacobians();
+  // m.calculate_EE_positions_orientations();
+  // m.calculate_COM(_q, _dq);
 
-  // cout << "--------------------------" << endl;
-  // cout <<"data :" <<datas[1].p.transpose() << endl;
-  // cout <<"rbdl :" <<m._x_left_front_leg.transpose() << endl;
-  // cout << "--------------------------" << endl;
+  // datas[0].pfeet(0) = m._x_right_front_leg(0);
+  // datas[0].pfeet(1) = m._x_right_front_leg(1);
+  // datas[0].pfeet(2) = m._x_right_front_leg(2);
 
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      datas[0].J(i, j) = m._J_FR_foot(i, j);
-      datas[1].J(i, j) = m._J_FL_foot(i, j);
-      datas[2].J(i, j) = m._J_RR_foot(i, j);
-      datas[3].J(i, j) = m._J_RL_foot(i, j);
-    }
-  }
-  datas[0].v = datas[0].J * datas[0].qd;
-  datas[1].v = datas[1].J * datas[1].qd;
-  datas[2].v = datas[2].J * datas[2].qd;
-  datas[3].v = datas[3].J * datas[3].qd;
+  // datas[1].pfeet(0) = m._x_left_front_leg(0);
+  // datas[1].pfeet(1) = m._x_left_front_leg(1);
+  // datas[1].pfeet(2) = m._x_left_front_leg(2);
+
+  // datas[2].pfeet(0) = m._x_right_rear_leg(0);
+  // datas[2].pfeet(1) = m._x_right_rear_leg(1);
+  // datas[2].pfeet(2) = m._x_right_rear_leg(2);
+
+  // datas[3].pfeet(0) = m._x_left_rear_leg(0);
+  // datas[3].pfeet(1) = m._x_left_rear_leg(1);
+  // datas[3].pfeet(2) = m._x_left_rear_leg(2);
+
+  // datas->com(0) = m._COM(0);
+  // datas->com(1) = m._COM(1);
+  // datas->com(2) = m._COM(2);
+  // datas->com_vel(0) = m._COM_vel(0);
+  // datas->com_vel(1) = m._COM_vel(1);
+  // datas->com_vel(2) = m._COM_vel(2);
+  // for (int i = 0; i < 3; i++) {
+  //   for (int j = 0; j < 3; j++) {
+  //     datas[0].J(i, j) = m._J_FR_foot(i, j);
+  //     datas[1].J(i, j) = m._J_FL_foot(i, j);
+  //     datas[2].J(i, j) = m._J_RR_foot(i, j);
+  //     datas[3].J(i, j) = m._J_RL_foot(i, j);
+  //   }
+  // }
+  // datas[0].v = datas[0].J * datas[0].qd;
+  // datas[1].v = datas[1].J * datas[1].qd;
+  // datas[2].v = datas[2].J * datas[2].qd;
+  // datas[3].v = datas[3].J * datas[3].qd;
 }
 
 /*!
@@ -140,28 +161,29 @@ void LegController<T>::updateCommand(LowCmd* cmd) {
     // cout << "--------------------------------------" << endl;
     // cout << leg << " vDes : " << commands[leg].vDes.transpose() << endl;
     // cout << "--------------------------------------" << endl;
-
     // Torque
     
     legTorque = datas[leg].J.transpose() * footForce;
-    // if (leg == 0||leg == 3) {
-    //   cout << leg << "  leg before torque :  " << legTorque.transpose() << endl;
-    //   cout << "-------------------------------------------------------" << endl;
+    // if(leg == 3){
+    //   cout << legTorque.transpose() << endl;
+    //   // cout << leg <<" leg torque :  " << legTorque.transpose() << endl;
+    //   cout << "---------------------------------------------------" << endl;
     // }
     legTorque += commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
                 commands[leg].kdJoint * (commands[leg].qdDes -
                 datas[leg].qd);
     // if(leg == 0 || leg == 3){
-    //   cout << leg << "  leg   " << endl;
-    //   cout << "Kp :  " << commands[leg].kpJoint << endl;
-    //   cout << "qDes :  " << commands[leg].qDes.transpose() << endl;
-    //   cout << "q :  " << datas[leg].q.transpose() << endl;
-    //   cout << "qDes-q :  " << (commands[leg].qDes - datas[leg].q).transpose()
-    //        << endl;
-    //   cout << "torque :  " << legTorque.transpose() << endl;
+    //   // cout << leg << "  leg   " << endl;
+    //   // cout << "Kp :  " << commands[leg].kpJoint << endl;
+    //   // cout << "qDes :  " << commands[leg].qDes.transpose() << endl;
+    //   // cout << "q :  " << datas[leg].q.transpose() << endl;
+    //   // cout << "qDes-q :  " << (commands[leg].qDes - datas[leg].q).transpose()
+    //   //      << endl;
+    //   cout << leg <<" leg torque :  " << legTorque.transpose() << endl;
+    //   cout << "---------------------------------------------------" << endl;
     // }
-    // if (leg == 2) {
-    //   cout << leg << "  leg torque :  " << legTorque.transpose() << endl;
+    // if (leg == 3) {
+    //   cout << leg << "  leg after torque :  " << legTorque.transpose() << endl;
     //   cout << "---------------------------------------------------" << endl;
     // }
 

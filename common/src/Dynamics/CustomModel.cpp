@@ -235,49 +235,6 @@ void CModel::calculate_foot_Jacobians()
         _J_RL_foot << _J_left_rear_leg(0, 12), _J_left_rear_leg(0, 13), _J_left_rear_leg(0, 14),
             _J_left_rear_leg(1, 12), _J_left_rear_leg(1, 13), _J_left_rear_leg(1, 14),
             _J_left_rear_leg(2, 12), _J_left_rear_leg(2, 13), _J_left_rear_leg(2, 14);
-
-        // _J_foot(0, 0) = _J_FR_foot(0, 0);
-        // _J_foot(0, 1) = _J_FR_foot(0, 1);
-        // _J_foot(0, 2) = _J_FR_foot(0, 2);
-        // _J_foot(1, 0) = _J_FR_foot(1, 0);
-        // _J_foot(1, 1) = _J_FR_foot(1, 1);
-        // _J_foot(1, 2) = _J_FR_foot(1, 2);
-        // _J_foot(2, 0) = _J_FR_foot(2, 0);
-        // _J_foot(2, 1) = _J_FR_foot(2, 1);
-        // _J_foot(2, 2) = _J_FR_foot(2, 2);
-
-        // _J_foot(3, 3) = _J_FL_foot(0, 0);
-        // _J_foot(3, 4) = _J_FL_foot(0, 1);
-        // _J_foot(3, 5) = _J_FL_foot(0, 2);
-        // _J_foot(4, 3) = _J_FL_foot(1, 0);
-        // _J_foot(4, 4) = _J_FL_foot(1, 1);
-        // _J_foot(4, 5) = _J_FL_foot(1, 2);
-        // _J_foot(5, 3) = _J_FL_foot(2, 0);
-        // _J_foot(5, 4) = _J_FL_foot(2, 1);
-        // _J_foot(5, 5) = _J_FL_foot(2, 2);
-
-        // _J_foot(6, 6) = _J_RR_foot(0, 0);
-        // _J_foot(6, 7) = _J_RR_foot(0, 1);
-        // _J_foot(6, 8) = _J_RR_foot(0, 2);
-        // _J_foot(7, 6) = _J_RR_foot(1, 0);
-        // _J_foot(7, 7) = _J_RR_foot(1, 1);
-        // _J_foot(7, 8) = _J_RR_foot(1, 2);
-        // _J_foot(8, 6) = _J_RR_foot(2, 0);
-        // _J_foot(8, 7) = _J_RR_foot(2, 1);
-        // _J_foot(8, 8) = _J_RR_foot(2, 2);
-
-        // _J_foot(9, 9) = _J_RL_foot(0, 0);
-        // _J_foot(9, 10) = _J_RL_foot(0, 1);
-        // _J_foot(9, 11) = _J_RL_foot(0, 2);
-        // _J_foot(10, 9) = _J_RL_foot(1, 0);
-        // _J_foot(10, 10) = _J_RL_foot(1, 1);
-        // _J_foot(10, 11) = _J_RL_foot(1, 2);
-        // _J_foot(11, 9) = _J_RL_foot(2, 0);
-        // _J_foot(11, 10) = _J_RL_foot(2, 1);
-        // _J_foot(11, 11) = _J_RL_foot(2, 2);
-
-        // cout << _J_foot << endl;
-        // cout <<"-------------------------------------------"<<endl;
     }
     else
     {
