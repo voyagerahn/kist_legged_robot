@@ -63,9 +63,9 @@ void RobotRunner::Run() {
   _legController->updateData(&state);
   // _time = (float)motiontime * dt;
   _robot_ctrl->runController();
+  saveLogData(motiontime);
 
   _legController->updateCommand(&cmd);
-
   safe.PositionLimit(cmd);
   safe.PowerProtect(cmd, state, 7);
   udp.SetSend(cmd);
@@ -86,6 +86,16 @@ void RobotRunner::finalizeStep() {
   safe.PowerProtect(cmd, state, 7);
   udp.SetSend(cmd);
   motiontime++;
+}
+
+
+void RobotRunner::saveLogData(int motiontime) {
+  logdata[0][motiontime] = _legController->datas[0].q(0);
+  logdata[1][motiontime] = _legController->datas[0].q(1); 
+  logdata[2][motiontime] = _legController->datas[0].q(2); 
+  logdata[3][motiontime] = _legController->datas[1].q(0);
+  logdata[4][motiontime] = _legController->datas[1].q(1); 
+  logdata[5][motiontime] = _legController->datas[1].q(2);   
 }
 
 RobotRunner::~RobotRunner() {

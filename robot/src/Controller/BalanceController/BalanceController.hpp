@@ -30,7 +30,6 @@ static const int NUM_CONTACT_POINTS = 4;
 static const int NUM_VARIABLES_PER_FOOT = 3;
 static const int NUM_CONSTRAINTS_PER_FOOT = 5;
 
-// static const double PI_CONST = 3.1415;
 static const double NEGATIVE_NUMBER = -1000000.0;
 static const double POSITIVE_NUMBER = 1000000.0;
 
@@ -135,6 +134,7 @@ class BalanceController {
   Eigen::VectorXd C_times_f_control;
 
   double alpha_control;
+  double gamma_control;
 
   /* Centroidal control PD gains and variables, see (3) and (4) of [R1] */
   double Kp_COMx, Kp_COMy, Kp_COMz;
@@ -171,6 +171,7 @@ class BalanceController {
   Eigen::VectorXd quat_b_world;
   Eigen::MatrixXd R_b_world;
   Eigen::MatrixXd p_feet;
+  Eigen::MatrixXd I3;
 
   Eigen::MatrixXd R_yaw_act;
 

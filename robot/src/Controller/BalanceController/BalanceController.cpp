@@ -113,24 +113,21 @@ BalanceController::BalanceController()
     xOpt_initialGuess[i] = 0.0;
   }
 
-  xOpt_initialGuess[2] = 100;
-  xOpt_initialGuess[5] = 100;
-  xOpt_initialGuess[8] = 100;
-  xOpt_initialGuess[11] = 100;
+  xOpt_initialGuess[2] = mass * 9.8 /4;
+  xOpt_initialGuess[5] = mass * 9.8 /4;
+  xOpt_initialGuess[8] = mass * 9.8 /4;
+  xOpt_initialGuess[11] = mass * 9.8 /4;
 
   for (int i = 0; i < NUM_VARIABLES_QP + NUM_CONSTRAINTS_QP; i++) {
     yOpt_qpOASES[i] = 0.0;
   }
 
-  //    FullStateData.p 1.000000 -0.131507
-  // FullStateData.p 2.000000 -0.000000
-  // FullStateData.p 3.000000 0.571957
 
   set_QPWeights();
   set_RobotLimits();
   set_worldData();
 
-  x_COM_world_desired << 0,0,0;//-0.14, 0.0, 0.57;
+  x_COM_world_desired << 0,0,0;
   xdot_COM_world_desired << 0, 0, 0;
   omega_b_world_desired << 0, 0, 0;
   R_b_world_desired.setIdentity();
@@ -229,27 +226,29 @@ void BalanceController::set_actual_swing_pos(double* pFeet_act_in) {
 
 void BalanceController::solveQP_nonThreaded(double* xOpt) {
   // &cpu_time
-  if (qp_not_init == 1.0) {
-    // qp_exit_flag = QProblemObj_qpOASES.init(
-    //     H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
-    //     ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_initialGuess);
-    qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
-                                            lb_qpOASES, ub_qpOASES, lbA_qpOASES,
-                                            ubA_qpOASES, nWSR_qpOASES);
-    qp_not_init = 0.0;
+  // if (qp_not_init == 1.0) {
+  //   // qp_exit_flag = QProblemObj_qpOASES.init(
+  //   //     H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+  //   //     ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_initialGuess);
+  //   qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
+  //                                           lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+  //                                           ubA_qpOASES, nWSR_qpOASES);
+  //   qp_not_init = 0.0;
 
-    nWSR_initial = nWSR_qpOASES;
-    // cpu_time_initial = cpu_time;
-  } else {
-    // qp_exit_flag = QProblemObj_qpOASES.init(
-    //     H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
-    //     ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_qpOASES, yOpt_qpOASES,
-    //     &guessedBounds, &guessedConstraints);
-    qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
-                                            lb_qpOASES, ub_qpOASES, lbA_qpOASES,
-                                            ubA_qpOASES, nWSR_qpOASES);
-  }
-
+  //   nWSR_initial = nWSR_qpOASES;
+  //   // cpu_time_initial = cpu_time;
+  // } else {
+  //   // qp_exit_flag = QProblemObj_qpOASES.init(
+  //       // H_qpOASES, g_qpOASES, A_qpOASES, lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+  //       // ubA_qpOASES, nWSR_qpOASES, &cpu_time, xOpt_qpOASES, yOpt_qpOASES,
+  //       // &guessedBounds, &guessedConstraints);
+  //   qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
+  //                                           lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+  //                                           ubA_qpOASES, nWSR_qpOASES);
+  // }
+  qp_exit_flag = QProblemObj_qpOASES.init(H_qpOASES, g_qpOASES, A_qpOASES,
+                                          lb_qpOASES, ub_qpOASES, lbA_qpOASES,
+                                          ubA_qpOASES, nWSR_qpOASES);
   QProblemObj_qpOASES.getPrimalSolution(xOpt_qpOASES);
   // QProblemObj_qpOASES.getDualSolution(yOpt_qpOASES);
 
@@ -318,11 +317,8 @@ void BalanceController::calc_PDcontrol() {
   // calculate error in yaw rotated coordinates
   error_x_rotated = (x_COM_world_desired - x_COM_world); // R_yaw_act.transpose()*(x_COM_world_desired - x_COM_world);
   error_dx_rotated = (xdot_COM_world_desired - xdot_COM_world);  // R_yaw_act.transpose() * (xdot_COM_world_desired - xdot_COM_world);
-  matrixLogRot(R_b_world_desired * R_b_world.transpose(), orientation_error);
-  // matrixLogRot(R_yaw_act.transpose() * R_b_world_desired *R_b_world.transpose() * R_yaw_act, orientation_error);
-  error_dtheta_rotated = (omega_b_world_desired - omega_b_world);
-
-  // R_yaw_act.transpose() * (omega_b_world_desired - omega_b_world);
+  matrixLogRot(R_b_world_desired * R_b_world.transpose(), orientation_error); // matrixLogRot(R_yaw_act.transpose() * R_b_world_desired *R_b_world.transpose() * R_yaw_act, orientation_error);
+  error_dtheta_rotated = (omega_b_world_desired - omega_b_world); // R_yaw_act.transpose() * (omega_b_world_desired - omega_b_world);
 
   xddot_COM_world_desired(0) +=
       Kp_COMx * error_x_rotated(0) + Kd_COMx * error_dx_rotated(0);
@@ -340,17 +336,17 @@ void BalanceController::calc_PDcontrol() {
 
   // Compute orientation error using (4) of [R1] and Proposition 2.5 of [R2]
 
-  Ig << .35, 0, 0, 0, 2.1, 0, 0, 0, 2.1;
-
+  Ig << 0.24, 0, 0, 0, 0.80, 0, 0, 0, 1.00;
   // MatrixXd II = R_yaw_act.transpose() * R_b_world * Ig * R_b_world.transpose() *
   //               R_yaw_act;
 
   MatrixXd II = R_b_world * Ig * R_b_world.transpose();
 
   // See RHS of Equation (5), [R1]
+  // b_control << mass * (xddot_COM_world_desired + gravity),
+  //     II * omegadot_b_world_desired;
   b_control << mass * (xddot_COM_world_desired + gravity),
-      II * omegadot_b_world_desired;
-
+      omegadot_b_world_desired;
   // std::cout << "orientation_error = " << orientation_error << "\n";
 }
 
@@ -431,8 +427,8 @@ void BalanceController::calc_A_qpOASES() {
 }
 
 void BalanceController::calc_g_qpOASES() {
-  g_eigen = -2 * A_control.transpose() * S_control * b_control;
-  g_eigen += -2 * xOptPrev.transpose() * alpha_control;
+  g_eigen =  -2 * A_control.transpose() * S_control * b_control;
+  g_eigen +=  -2 * xOptPrev.transpose() * 1e-3;
   // Copy to real_t array (qpOASES data type)
   copy_Eigen_to_real_t(g_qpOASES, g_eigen, NUM_VARIABLES_QP, 1);
 }
@@ -563,14 +559,14 @@ void BalanceController::set_QP_options(double use_hard_constraint_pitch_in) {
 void BalanceController::set_QPWeights() {
   S_control.setIdentity();
   W_control.setIdentity();
-  alpha_control = .1;
+  alpha_control = 10;//.1;
 }
 
 void BalanceController::set_worldData() {
   direction_normal_flatGround << 0, 0, 1;
   gravity << 0, 0, 9.81;
   direction_tangential_flatGround << 0.7071, 0.7071, 0;
-  mu_friction = 0.05;
+  mu_friction = 0.5;
 }
 
 void BalanceController::set_friction(double mu_in) { mu_friction = mu_in; }

@@ -106,11 +106,9 @@ void LinearKFPositionVelocityEstimator<T>::run() {
     Quadruped<T>& quadruped =
         *(this->_stateEstimatorData.legControllerData->quadruped);
     Vec3<T> ph = quadruped.getHipLocation(i);  // hip positions relative to CoM
-    //hw_i->leg_controller->leg_datas[i].p;
-    Vec3<T> p_rel = ph + this->_stateEstimatorData.legControllerData[i].p;
-    // hw_i->leg_controller->leg_datas[i].v;
-    Vec3<T> dp_rel = this->_stateEstimatorData.legControllerData[i].v;
-    Vec3<T> p_f = Rbod * p_rel;
+    Vec3<T> p_rel = ph + this->_stateEstimatorData.legControllerData[i].p; // foot positions relative to CoM
+    Vec3<T> dp_rel = this->_stateEstimatorData.legControllerData[i].v; // foot velocity
+    Vec3<T> p_f = Rbod * p_rel; // rot_mat.T * foot positions 
     Vec3<T> dp_f =
         Rbod *
         (this->_stateEstimatorData.result->omegaBody.cross(p_rel) + dp_rel);
@@ -153,13 +151,18 @@ void LinearKFPositionVelocityEstimator<T>::run() {
 
   Eigen::Matrix<T, 28, 1> y;
   y << _ps, _vs, pzs;
-  _xhat = _A * _xhat + _B * a;
+  _xhat = _A * _xhat + _B * a; //x=Fx + Bu, x: predicted state estimate, notation: A=F a=u
   Eigen::Matrix<T, 18, 18> At = _A.transpose();
-  Eigen::Matrix<T, 18, 18> Pm = _A * _P * At + Q;
+  Eigen::Matrix<T, 18, 18> Pm = _A * _P * At + Q;  // P = FPF' + Q
   Eigen::Matrix<T, 18, 28> Ct = _C.transpose();
-  Eigen::Matrix<T, 28, 1> yModel = _C * _xhat;
-  Eigen::Matrix<T, 28, 1> ey = y - yModel;
-  Eigen::Matrix<T, 28, 28> S = _C * Pm * Ct + R;
+  Eigen::Matrix<T, 28, 1> yModel = _C * _xhat; // Hx
+  Eigen::Matrix<T, 28, 1> ey = y - yModel; //y = z - Hx
+  // project system uncertainty into measurement space
+  Eigen::Matrix<T, 28, 28> S = _C * Pm * Ct + R; //S = HPH' + R
+  // custom
+//   Eigen::Matrix<T, 28, 28> SI = S.inverse();
+//   Eigen::Matrix<T, 18, 28> K = Pm * Ct * SI;
+//   _xhat += K * ey;
 
   // todo compute LU only once
   Eigen::Matrix<T, 28, 1> S_ey = S.lu().solve(ey);

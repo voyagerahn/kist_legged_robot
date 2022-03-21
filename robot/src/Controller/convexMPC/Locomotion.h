@@ -54,16 +54,16 @@ public:
   Vec4<float> contact_state;
 
   BalanceController balanceController;
-  double minForce = 0.1;
-  double maxForce = 1000;
+  double minForce = 10;
+  double maxForce = 160;
   double contactStateScheduled[4];  // = {1, 1, 1, 1};
   double minForces[4];  // = {minForce, minForce, minForce, minForce};
   double maxForces[4];  // = {maxForce, maxForce, maxForce, maxForce};
-  double COM_weights_stance[3] = {1, 1, 10};
-  double Base_weights_stance[3] = {20, 10, 10};
+  double COM_weights_stance[3] = {1, 1, 1};
+  double Base_weights_stance[3] = {10, 10, 1};
   double pFeet[12], p_des[3], p_act[3], v_des[3], v_act[3], O_err[3], rpy[3],
       omegaDes[3];
-  double p_tmp[3];
+  double p_tmp[3],v_tmp[3];
   double se_xfb[13];
   double kpCOM[3], kdCOM[3], kpBase[3], kdBase[3];
   

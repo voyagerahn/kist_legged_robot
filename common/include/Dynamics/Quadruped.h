@@ -88,7 +88,7 @@ class Quadruped {
   }
 
   /*!
-   * Get location of the hip for the given leg in robot frame
+   * Get location of the hip for the given leg in base frame
    * @param leg : the leg index
    */
   Vec3<T> getHipLocation(int leg) {
@@ -104,7 +104,8 @@ class Quadruped {
   }
   Vec3<T> getHipOffsets(int leg) {
     assert(leg >= 0 && leg < 4);
-    Vec3<T> COM_offset(0.012731, 0.002186, 0.000515);
+    //Vec3<T> COM_offset(0.012731, 0.002186, 0.000515);
+    Vec3<T> COM_offset(0.01, 0.002186, 0.000515);
     Vec3<T> pHip((leg == 0 || leg == 1) ? 0.183 : -0.183,
                  (leg == 1 || leg == 3) ? 0.047 : -0.047, 0);
     return (pHip - COM_offset);
